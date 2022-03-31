@@ -8,6 +8,6 @@ module OAISolr
     repository_url "http://localhost.default.invalid:4567/oai"
     record_prefix "oai:localhost.default.invalid"
     admin_email "admin@default.invalid"
-    source_model OAISolr::Model.new()
+    source_model OAISolr::Model.new
   end
 end

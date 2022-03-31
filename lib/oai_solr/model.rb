@@ -1,3 +1,5 @@
+require "oai"
+
 module OAISolr
   class Model < OAI::Provider::Model
     include OAI::Provider
@@ -14,7 +16,7 @@ module OAISolr
       nil
     end
 
-    def find(selector, opts={})
+    def find(selector, opts = {})
       nil
     end
   end

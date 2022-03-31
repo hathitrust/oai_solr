@@ -2,7 +2,7 @@ require "rspec"
 require "rack/test"
 require "nokogiri"
 
-require_relative "../oai_solr.rb"
+require_relative "../oai_solr"
 
 RSpec.describe "OAISolr" do
   include Rack::Test::Methods
@@ -40,26 +40,44 @@ RSpec.describe "OAISolr" do
   describe "ListMetadataFormats" do
     before(:each) { get oai_endpoint, verb: "ListMetadataFormats" }
     it_behaves_like "valid oai response"
+
+    it "supports dublin core"
+    it "supports marc21"
   end
 
   describe "ListSets" do
     before(:each) { get oai_endpoint, verb: "ListSets" }
     it_behaves_like "valid oai response"
+
+    it "includes hathitrust:pd"
+    it "includes hathitrust:pdus"
+    it "includes hathitrust:ump"
   end
 
   describe "ListIdentifiers" do
     before(:each) { get oai_endpoint, verb: "ListIdentifiers" }
     it_behaves_like "valid oai response"
+
+    it "provides a page of N results"
+    it "provides resumption token"
+    it "can fetch additional pages of N results"
   end
 
   describe "ListRecords" do
     before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "oai_dc" }
     it_behaves_like "valid oai response"
+
+    it "provides a page of N results"
+    it "provides resumption token"
+    it "can fetch additional pages of N results"
   end
 
   describe "GetRecord" do
     before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "nonexistent" }
     it_behaves_like "valid oai response"
+
+    it "can get a record as dublin core"
+    it "can get a record as MARC"
   end
 
   it "can handle post requests" do
