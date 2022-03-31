@@ -15,7 +15,7 @@ RSpec.describe "OAISolr" do
 
   shared_examples "valid oai response" do
     let(:oai_schema) do
-      Nokogiri::XML::Schema(File.read(File.dirname(__FILE__) + "/OAI-PMH.xsd"))
+      Nokogiri::XML::Schema(File.open(File.dirname(__FILE__) + "/schemas/oai-schemas.xsd"))
     end
 
     it "returns ok" do
@@ -26,7 +26,7 @@ RSpec.describe "OAISolr" do
       expect(last_response.content_type).to eq("text/xml;charset=utf-8")
     end
 
-    xit "returns valid xml according to the OAI schema" do
+    it "returns valid xml according to the OAI schema" do
       doc = Nokogiri::XML::Document.parse(last_response.body)
       expect(oai_schema.valid?(doc)).to be true
     end

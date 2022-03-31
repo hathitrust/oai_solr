@@ -1,0 +1,4 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema">
+  <import namespace="http://www.openarchives.org/OAI/2.0/" schemaLocation="OAI-PMH.xsd"/>
+  <import namespace="http://www.openarchives.org/OAI/2.0/oai-identifier" schemaLocation="oai-identifier.xsd"/>
+</schema>
