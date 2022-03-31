@@ -6,6 +6,8 @@ module OAISolr
   class Application < Sinatra::Application
     configure :development do
       register Sinatra::Reloader
+      also_reload "oai_solr/provider"
+      also_reload "oai_solr/record"
     end
 
     def handle_oai

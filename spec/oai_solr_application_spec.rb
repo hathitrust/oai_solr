@@ -42,24 +42,23 @@ RSpec.describe "OAISolr" do
     it_behaves_like "valid oai response"
   end
 
-  xdescribe "ListSets" do
+  describe "ListSets" do
     before(:each) { get oai_endpoint, verb: "ListSets" }
     it_behaves_like "valid oai response"
   end
 
-  xdescribe "ListIdentifiers" do
+  describe "ListIdentifiers" do
     before(:each) { get oai_endpoint, verb: "ListIdentifiers" }
     it_behaves_like "valid oai response"
   end
 
-  xdescribe "ListRecords" do
-    before(:each) { get oai_endpoint, verb: "ListRecords" }
+  describe "ListRecords" do
+    before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "oai_dc" }
     it_behaves_like "valid oai response"
   end
 
-  xdescribe "GetRecord" do
-    # additional required params ?
-    before(:each) { get oai_endpoint, verb: "GetRecord" }
+  describe "GetRecord" do
+    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "nonexistent" }
     it_behaves_like "valid oai response"
   end
 end

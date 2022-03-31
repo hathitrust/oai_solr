@@ -1,5 +1,5 @@
 require "oai"
-require "oai_solr/record"
+require "oai_solr/model"
 
 module OAISolr
   class Provider < OAI::Provider::Base
@@ -8,6 +8,6 @@ module OAISolr
     repository_url "http://localhost.default.invalid:4567/oai"
     record_prefix "oai:localhost.default.invalid"
     admin_email "admin@default.invalid"
-    source_model OAISolr::Record
+    source_model OAISolr::Model.new()
   end
 end
