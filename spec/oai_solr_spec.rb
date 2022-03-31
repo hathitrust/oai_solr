@@ -2,7 +2,7 @@ require "rspec"
 require "rack/test"
 require "nokogiri"
 
-require "oai_solr/application"
+require_relative "../oai_solr.rb"
 
 RSpec.describe "OAISolr" do
   include Rack::Test::Methods
@@ -10,7 +10,7 @@ RSpec.describe "OAISolr" do
   let(:oai_endpoint) { "/oai" }
 
   def app
-    OAISolr::Application
+    Sinatra::Application
   end
 
   shared_examples "valid oai response" do
@@ -60,5 +60,9 @@ RSpec.describe "OAISolr" do
   describe "GetRecord" do
     before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "nonexistent" }
     it_behaves_like "valid oai response"
+  end
+
+  it "can handle post requests" do
+    post oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "nonexistent"
   end
 end

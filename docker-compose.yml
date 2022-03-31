@@ -9,7 +9,7 @@ services:
     volumes:
       - .:/usr/src/app
       - gem_cache:/gems
-    command: bundle exec puma -I lib -b tcp://0.0.0.0:4567
+    command: bundle exec ruby oai_solr.rb -o 0.0.0.0
 
   solr-sdr-catalog:
     image: ghcr.io/hathitrust/catalog-solr
