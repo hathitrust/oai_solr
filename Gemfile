@@ -5,7 +5,6 @@ source "https://rubygems.org"
 # gem "rails"
 
 gem "sinatra", "~> 2.2"
-gem "nokogiri"
 gem "puma"
 gem "oai"
 
@@ -16,4 +15,5 @@ group :development, :test do
   gem "simplecov"
   gem "rack-test"
   gem "sinatra-contrib"
+  gem "nokogiri"
 end
