@@ -11,7 +11,9 @@ docker-compose up
 
 ## Using an External Solr
 
-TODO add instructions here for adjusting docker-compose.yml
+Follow the README from https://github.com/hathitrust/hathitrust_catalog_indexer
+and use the instructions for "Using with other projects via docker" to use this
+project with the solr running in that docker-compose environment.
 
 ## Planned Features
 

@@ -1,7 +1,10 @@
+---
 version: '3'
 
 services:
 
+  # Uncomment the networks block if you want to connect to solr running
+  # elsewhere
   web:
     build: .
     ports:
@@ -10,6 +13,8 @@ services:
       - .:/usr/src/app
       - gem_cache:/gems
     command: bundle exec ruby oai_solr.rb -o 0.0.0.0
+  # networks:
+  #   - catalog_indexer
 
   solr-sdr-catalog:
     image: ghcr.io/hathitrust/catalog-solr
@@ -18,3 +23,9 @@ services:
 
 volumes:
   gem_cache:
+
+networks:
+  catalog_indexer:
+    external: true
+    # Adjust this if the running solr is in another docker network
+    name: hathitrust_catalog_indexer_default
