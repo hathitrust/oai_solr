@@ -7,6 +7,7 @@ source "https://rubygems.org"
 gem "sinatra", "~> 2.2"
 gem "puma"
 gem "oai"
+gem "marc"
 
 group :development, :test do
   gem "pry"

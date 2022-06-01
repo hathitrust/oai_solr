@@ -31,12 +31,18 @@ GEM
     faraday-retry (1.0.3)
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
+    marc (1.1.1)
+      rexml
+      scrub_rb (>= 1.0.1, < 2)
+      unf
     method_source (1.0.0)
     multi_json (1.15.0)
     multipart-post (2.1.1)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.5.8)
+    nokogiri (1.13.3-x86_64-darwin)
+      racc (~> 1.4)
     nokogiri (1.13.3-x86_64-linux)
       racc (~> 1.4)
     oai (1.1.0)
@@ -89,6 +95,7 @@ GEM
       rubocop-ast (>= 0.4.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
+    scrub_rb (1.0.1)
     simplecov (0.21.2)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -110,12 +117,17 @@ GEM
       rubocop (= 1.26.1)
       rubocop-performance (= 1.13.3)
     tilt (2.0.10)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.8.1)
     unicode-display_width (2.1.0)
 
 PLATFORMS
+  x86_64-darwin-21
   x86_64-linux
 
 DEPENDENCIES
+  marc
   nokogiri
   oai
   pry
