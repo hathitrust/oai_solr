@@ -41,14 +41,20 @@ RSpec.describe "OAISolr" do
     before(:each) { get oai_endpoint, verb: "ListMetadataFormats" }
     it_behaves_like "valid oai response"
 
-    it "supports dublin core"
-    it "supports marc21"
+    it "claims to support dublin core" do
+      doc = Nokogiri::XML::Document.parse(last_response.body)
+      expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).to include("oai_dc")
+    end
+
+    it "claims to support marc21" do
+      doc = Nokogiri::XML::Document.parse(last_response.body)
+      expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).to include("marc21")
+    end
   end
 
   describe "ListSets" do
     before(:each) { get oai_endpoint, verb: "ListSets" }
     it_behaves_like "valid oai response"
-
     it "includes hathitrust:pd"
     it "includes hathitrust:pdus"
     it "includes hathitrust:ump"
@@ -57,7 +63,6 @@ RSpec.describe "OAISolr" do
   describe "ListIdentifiers" do
     before(:each) { get oai_endpoint, verb: "ListIdentifiers" }
     it_behaves_like "valid oai response"
-
     it "provides a page of N results"
     it "provides resumption token"
     it "can fetch additional pages of N results"
@@ -66,18 +71,22 @@ RSpec.describe "OAISolr" do
   describe "ListRecords" do
     before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "oai_dc" }
     it_behaves_like "valid oai response"
-
     it "provides a page of N results"
     it "provides resumption token"
     it "can fetch additional pages of N results"
   end
 
   describe "GetRecord" do
-    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "nonexistent" }
+    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "000007599" }
     it_behaves_like "valid oai response"
 
     it "can get a record as dublin core"
-    it "can get a record as MARC"
+
+    it "can get a record as MARC" do
+      get oai_endpoint, verb: "GetRecord", metadataPrefix: "marc21", identifier: "000007599"
+      doc = MARC::XMLReader.new(StringIO.new(last_response.body)).first
+      expect(doc.leader).to eq "00937cam a2200289I  4500"
+    end
   end
 
   it "can handle post requests" do
