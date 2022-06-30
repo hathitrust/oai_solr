@@ -6,6 +6,7 @@ require "oai"
 require "rsolr"
 require "stringio"
 require "date"
+require "oai_solr/dublin_core"
 
 module OAISolr
   class Record
@@ -23,7 +24,7 @@ module OAISolr
 
     # TODO: Make this actually work the way we want it.
     def to_oai_dc
-      DublinCore.instance.encode(nil, self)
+      OAISolr::DublinCore.instance.encode(nil, self)
     end
 
     #     # this is an alternative to using to_oai_dc and our DublinCore class
