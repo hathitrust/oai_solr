@@ -27,8 +27,12 @@ RSpec.describe "OAISolr" do
     end
 
     it "returns valid xml according to the OAI schema" do
-      doc = Nokogiri::XML::Document.parse(last_response.body)
-      expect(oai_schema.valid?(doc)).to be true
+      Dir.mktmpdir do |tmpdir|
+        File.write("#{tmpdir}/last_response.xml", last_response.body)
+        expect(system("StdInParse -f -n -s -v=always < #{tmpdir}/last_response.xml")).to be true
+        # doc = Nokogiri::XML::Document.parse(last_response.body)
+        # expect(oai_schema.valid?(doc)).to be true
+      end
     end
   end
 
@@ -76,14 +80,19 @@ RSpec.describe "OAISolr" do
     it "can fetch additional pages of N results"
   end
 
-  describe "GetRecord" do
+  describe "GetRecord DublinCore" do
+    # TODO: use record identifier known to be in sample solr
     before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "000007599" }
     it_behaves_like "valid oai response"
 
     it "can get a record as dublin core"
+  end
+
+  describe "GetRecord MARC" do
+    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "marc21", identifier: "000007599" }
+    it_behaves_like "valid oai response"
 
     it "can get a record as MARC" do
-      get oai_endpoint, verb: "GetRecord", metadataPrefix: "marc21", identifier: "000007599"
       doc = MARC::XMLReader.new(StringIO.new(last_response.body)).first
       expect(doc.leader).to eq "00937cam a2200289I  4500"
     end
