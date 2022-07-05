@@ -70,7 +70,7 @@ RSpec.describe "OAISolr" do
     it "includes hathitrust:ump"
   end
 
-  xdescribe "ListIdentifiers" do
+  describe "ListIdentifiers" do
     before(:each) { get oai_endpoint, verb: "ListIdentifiers" }
     it_behaves_like "valid oai response"
     it "provides a page of N results"
@@ -78,7 +78,7 @@ RSpec.describe "OAISolr" do
     it "can fetch additional pages of N results"
   end
 
-  xdescribe "ListRecords" do
+  describe "ListRecords" do
     before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "oai_dc" }
     it_behaves_like "valid oai response"
     it "provides a page of N results"

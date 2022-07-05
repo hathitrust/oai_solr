@@ -22,12 +22,11 @@ module OAISolr
     def find(selector, opts = {})
       @client = RSolr.connect url: ENV.fetch("SOLR_URL", "http://localhost:9033/solr/catalog")
       if selector == :all
-        raise "all not implemented"
         # TODO: this is truly a terrible idea for any non-toy size catalogs
-        response = @client.get "select", :params => {:q => "*:*", :wt => "ruby"}
+        response = @client.get "select", params: {q: "*:*", wt: "ruby", rows: 1}
         num_rows = response["response"]["numFound"]
-        response = @client.get "select", :params => {:q => "*:*", :wt => "ruby", :rows => num_rows}
-        #response["response"]["docs"].map { |doc| OAISolr::Record.new(doc) }
+        response = @client.get "select", params: {q: "*:*", wt: "ruby", rows: num_rows}
+        response["response"]["docs"].map { |doc| OAISolr::Record.new(doc) }
       else
         response = @client.get "select", params: {q: "id:#{selector}", wt: "ruby"}
         record = OAISolr::Record.new(response["response"]["docs"].first)
