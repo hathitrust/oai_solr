@@ -40,7 +40,7 @@ module OAISolr
           field.each do |subfield|
             new_field.append(subfield) if subfield_codes.chars.include? subfield.code
           end
-          slim_marc << new_field
+          slim_marc << new_field if new_field.subfields.any?
         end
       end
       full_marc.each_by_tag("974") { |field| slim_marc << field974_to_field856(field) }

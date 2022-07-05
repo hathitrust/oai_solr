@@ -5,7 +5,7 @@ require "pry"
 require "nokogiri"
 
 RSpec.describe OAISolr::Record do
-  let(:sdoc) { JSON.parse(File.read("spec/data/solr_document.json")) }
+  let(:sdoc) { JSON.parse(File.read("spec/data/000007599.json")) }
   let(:rec) { described_class.new(sdoc) }
   let(:parsed) { Nokogiri::XML::Document.parse(rec.to_oai_dc) }
   let(:oai_dc_schema) do
