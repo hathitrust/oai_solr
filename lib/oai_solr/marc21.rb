@@ -27,6 +27,8 @@ module OAISolr
     end
 
     # Duplicate the record with only some of the fields
+    # https://docs.google.com/spreadsheets/d/12Geu1Dst-frCNBA9kRwhAAK2yTI_qjl-deEt91P6S6k
+    #
     # @param [MARC::Record]
     # @return [MARC::Record]
     def slim_marc full_marc

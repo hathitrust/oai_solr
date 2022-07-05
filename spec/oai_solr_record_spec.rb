@@ -1,7 +1,5 @@
 require "json"
-require "rspec"
 require "oai_solr/record"
-require "pry"
 require "nokogiri"
 
 RSpec.describe OAISolr::Record do
@@ -19,11 +17,11 @@ RSpec.describe OAISolr::Record do
     end
 
     it "has dc:title" do
-      expect(parsed.css('dc|title').text).to eq("Wildlife management")
+      expect(parsed.css("dc|title").text).to eq("Wildlife management")
     end
 
     it "has dc:creator" do
-      expect(parsed.css('dc|creator').map {|c| c.text}).to include("Trippensee, Reuben Edwin,")
+      expect(parsed.css("dc|creator").map { |c| c.text }).to include("Trippensee, Reuben Edwin,")
     end
 
     it "has dc:type text"
@@ -33,13 +31,13 @@ RSpec.describe OAISolr::Record do
     it "has dc:format"
     it "has dc:description"
     it "has OCN as an dc:identifier" do
-      expect(parsed.css('dc|identifier').map {|c| c.text}).to include("(OCoLC)562083")
+      expect(parsed.css("dc|identifier").map { |c| c.text }).to include("(OCoLC)562083")
     end
     it "has item handle as an dc:identifier" do
       handle = "http://hdl.handle.net/2027/uc1.31822013347232"
-      expect(parsed.css('dc|identifier').map {|c| c.text}).to include(handle)
+      expect(parsed.css("dc|identifier").map { |c| c.text }).to include(handle)
     end
-    
+
     it "has dc:rights"
   end
 end

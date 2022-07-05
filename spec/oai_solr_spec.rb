@@ -1,8 +1,12 @@
 require "rspec"
 require "rack/test"
 require "nokogiri"
+require "set"
 
 require_relative "../oai_solr"
+
+# TODO get this from configuration
+PAGE_SIZE = 10
 
 RSpec.describe "OAISolr" do
   include Rack::Test::Methods
@@ -20,10 +24,6 @@ RSpec.describe "OAISolr" do
   end
 
   shared_examples "valid oai response" do
-    let(:oai_schema) do
-      Nokogiri::XML::Schema(File.open(File.dirname(__FILE__) + "/schemas/oai-schemas.xsd"))
-    end
-
     it "returns ok" do
       expect(last_response).to be_ok
     end
@@ -36,8 +36,6 @@ RSpec.describe "OAISolr" do
       Dir.mktmpdir do |tmpdir|
         File.write("#{tmpdir}/last_response.xml", last_response.body)
         expect(system("StdInParse -f -n -s -v=always < #{tmpdir}/last_response.xml")).to be true
-        # doc = Nokogiri::XML::Document.parse(last_response.body)
-        # expect(oai_schema.valid?(doc)).to be true
       end
     end
   end
@@ -73,22 +71,50 @@ RSpec.describe "OAISolr" do
   describe "ListIdentifiers" do
     before(:each) { get oai_endpoint, verb: "ListIdentifiers" }
     it_behaves_like "valid oai response"
-    it "provides a page of N results"
-    it "provides resumption token"
-    it "can fetch additional pages of N results"
+    # it_behaves_like "paged oai response"
   end
 
   describe "ListRecords" do
     before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "oai_dc" }
+
+    it "provides a page of N results" do
+      doc = Nokogiri::XML::Document.parse(last_response.body)
+      expect(doc.xpath("count(//xmlns:ListRecords/xmlns:record)")).to eq(PAGE_SIZE)
+    end
+
+    it "provides resumption token" do
+      doc = Nokogiri::XML::Document.parse(last_response.body)
+      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
+      expect(token.text).not_to be(nil)
+    end
+
+    it "resumption token has complete list size" do
+      doc = Nokogiri::XML::Document.parse(last_response.body)
+      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
+      expect(token.attributes["completeListSize"].value).to match(/^\d+/)
+    end
+
+    it "can fetch additional pages of N results" do
+      doc = Nokogiri::XML::Document.parse(last_response.body)
+      page_identifiers = doc.xpath("//xmlns:identifier").map(&:text)
+      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+
+      get oai_endpoint, verb: "ListRecords", resumptionToken: token
+      next_page_doc = Nokogiri::XML::Document.parse(last_response.body)
+      next_page_identifiers = next_page_doc.xpath("//xmlns:identifier").map(&:text)
+
+      expect(next_page_identifiers.length).to eq(PAGE_SIZE)
+      expect(next_page_identifiers.to_set.intersection(page_identifiers)).to be_empty
+    end
+
+    it "can get the complete result set"
+    it "gets a useful error with invalid resumption token"
     it_behaves_like "valid oai response"
-    it "provides a page of N results"
-    it "provides resumption token"
-    it "can fetch additional pages of N results"
   end
 
   describe "GetRecord DublinCore" do
     # TODO: use record identifier known to be in sample solr
-    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: existing_record_id } 
+    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: existing_record_id }
     it_behaves_like "valid oai response"
 
     it "can get a record as dublin core"
