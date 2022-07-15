@@ -5,6 +5,8 @@ module OAISolr
   class Marc21
     SLIM_MARC_FIELDS = {'010': "a", '015': "a", '020': "a", '022': "a",
                         '035': "a", '041': "ah", '050': "ab", '082': "ab",
+                        '100': "abcdq", '110': "a", '111': "a", '130': "a",
+                        '240': "a", '245': "abc", '250': "ab",
                         '260': "abc", '300': "a", '600': "abcdq", '610': "a",
                         '611': "a", '630': "a", '650': "a", '651': "a"}
 
@@ -38,7 +40,7 @@ module OAISolr
       slim_marc << full_marc["005"]
       SLIM_MARC_FIELDS.each do |tag, subfield_codes|
         full_marc.each_by_tag(tag.to_s) do |field|
-          new_field = MARC::DataField.new(tag, field["ind1"], field["ind2"])
+          new_field = MARC::DataField.new(tag.to_s, field["ind1"], field["ind2"])
           field.each do |subfield|
             new_field.append(subfield) if subfield_codes.chars.include? subfield.code
           end

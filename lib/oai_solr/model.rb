@@ -6,10 +6,6 @@ module OAISolr
   class Model < OAI::Provider::Model
     include OAI::Provider
 
-    # TODO should come from configuration. Using small page size for now to
-    # speed up tests
-    PAGE_SIZE = 10
-
     def earliest
       Time.at(0)
     end
@@ -31,6 +27,10 @@ module OAISolr
       end
     end
 
+    def page_size
+      ENV['PAGE_SIZE'] || 10
+    end
+
     private
 
     def find_all(opts)
@@ -39,7 +39,7 @@ module OAISolr
       response = @client.get("select", params: {
         q: "*:*",
         wt: "ruby",
-        rows: PAGE_SIZE,
+        rows: page_size,
         cursorMark: cursor_mark,
         sort: "id asc"
       })

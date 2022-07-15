@@ -5,9 +5,6 @@ require "set"
 
 require_relative "../oai_solr"
 
-# TODO get this from configuration
-PAGE_SIZE = 10
-
 RSpec.describe "OAISolr" do
   include Rack::Test::Methods
 
@@ -79,7 +76,7 @@ RSpec.describe "OAISolr" do
 
     it "provides a page of N results" do
       doc = Nokogiri::XML::Document.parse(last_response.body)
-      expect(doc.xpath("count(//xmlns:ListRecords/xmlns:record)")).to eq(PAGE_SIZE)
+      expect(doc.xpath("count(//xmlns:ListRecords/xmlns:record)")).to eq(OAISolr::Model.new.page_size)
     end
 
     it "provides resumption token" do
@@ -103,7 +100,7 @@ RSpec.describe "OAISolr" do
       next_page_doc = Nokogiri::XML::Document.parse(last_response.body)
       next_page_identifiers = next_page_doc.xpath("//xmlns:identifier").map(&:text)
 
-      expect(next_page_identifiers.length).to eq(PAGE_SIZE)
+      expect(next_page_identifiers.length).to eq(OAISolr::Model.new.page_size)
       expect(next_page_identifiers.to_set.intersection(page_identifiers)).to be_empty
     end
 

@@ -36,6 +36,14 @@ RSpec.describe OAISolr::Marc21 do
       it "removes the 008 for #{file}" do
         expect(marc21.slim_marc(rec.marc_record)["008"]).to be_nil
       end
+
+      it "has an author field" do
+        expect(marc21.slim_marc(rec.marc_record)["100"].count).to be > 0
+      end
+
+      it "has a title field" do
+        expect(marc21.slim_marc(rec.marc_record)["245"].count).to be > 0
+      end
     end
   end
 
