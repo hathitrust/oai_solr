@@ -13,19 +13,19 @@ services:
       - .:/usr/src/app
       - gem_cache:/gems
     command: bundle exec ruby oai_solr.rb -o 0.0.0.0
+    environment:
+      SOLR_URL: http://solr-sdr-catalog:9033/solr/catalog
   # networks:
   #   - catalog_indexer
 
   solr-sdr-catalog:
-    image: ghcr.io/hathitrust/catalog-solr
-    ports:
-      - "9033:9033"
+    image: ghcr.io/hathitrust/catalog-solr-sample
 
 volumes:
   gem_cache:
 
-networks:
-  catalog_indexer:
-    external: true
-    # Adjust this if the running solr is in another docker network
-    name: hathitrust_catalog_indexer_default
+# networks:
+#   catalog_indexer:
+#     external: true
+#     # Adjust this if the running solr is in another docker network
+#     name: hathitrust_catalog_indexer_default
