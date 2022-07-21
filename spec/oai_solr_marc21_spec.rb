@@ -44,6 +44,10 @@ RSpec.describe OAISolr::Marc21 do
       it "has a title field" do
         expect(marc21.slim_marc(rec.marc_record)["245"].count).to be > 0
       end
+
+      it "has a subject field" do
+        expect(marc21.slim_marc(rec.marc_record)["650"].count).to be > 0
+      end
     end
   end
 

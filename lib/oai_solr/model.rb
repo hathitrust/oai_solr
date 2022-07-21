@@ -28,7 +28,7 @@ module OAISolr
     end
 
     def page_size
-      ENV['PAGE_SIZE'] || 10
+      ENV["PAGE_SIZE"] || 10
     end
 
     private
