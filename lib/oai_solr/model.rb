@@ -27,10 +27,6 @@ module OAISolr
       end
     end
 
-    def page_size
-      ENV["PAGE_SIZE"] || 10
-    end
-
     private
 
     def find_all(opts)
@@ -39,7 +35,7 @@ module OAISolr
       response = @client.get("select", params: {
         q: "*:*",
         wt: "ruby",
-        rows: page_size,
+        rows: Settings.page_size,
         cursorMark: cursor_mark,
         sort: "id asc"
       })

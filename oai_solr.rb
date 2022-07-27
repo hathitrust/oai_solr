@@ -2,6 +2,7 @@ $LOAD_PATH << "./lib"
 
 require "sinatra"
 require "sinatra/reloader"
+require "oai_solr/settings"
 require "oai_solr/provider"
 
 def handle_oai

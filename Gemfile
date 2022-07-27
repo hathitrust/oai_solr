@@ -9,6 +9,7 @@ gem "puma"
 gem "oai"
 gem "marc"
 gem "rsolr"
+gem "ettin"
 
 group :development, :test do
   gem "pry"
