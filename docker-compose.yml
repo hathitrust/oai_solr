@@ -3,8 +3,6 @@ version: '3'
 
 services:
 
-  # Uncomment the networks block if you want to connect to solr running
-  # elsewhere
   web:
     build: .
     ports:
@@ -15,17 +13,22 @@ services:
     command: bundle exec ruby oai_solr.rb -o 0.0.0.0
     environment:
       SOLR_URL: http://solr-sdr-catalog:9033/solr/catalog
-  # networks:
-  #   - catalog_indexer
+    depends_on:
+      - solr-sdr-catalog
+
+  test:
+    build: .
+    volumes:
+      - .:/usr/src/app
+      - gem_cache:/gems
+    command: bash -c "bin/wait-for solr-sdr-catalog:9033 && bundle exec rspec"
+    environment:
+      SOLR_URL: http://solr-sdr-catalog:9033/solr/catalog
+    depends_on:
+      - solr-sdr-catalog
 
   solr-sdr-catalog:
     image: ghcr.io/hathitrust/catalog-solr-sample
 
 volumes:
   gem_cache:
-
-# networks:
-#   catalog_indexer:
-#     external: true
-#     # Adjust this if the running solr is in another docker network
-#     name: hathitrust_catalog_indexer_default

@@ -1,0 +1,39 @@
+name: Docker Build
+
+on:
+  workflow_run:
+    workflows: [ 'Run CI']
+    branches: [ 'main' ]
+    types: [ completed ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: hathitrust/github_actions/build@v1
+        with:
+          image: ghcr.io/hathitrust/oai_solr-unstable
+          dockerfile: Dockerfile.prod
+          tag: ${{ github.sha }}
+          push_latest: true
+          registry_token: ${{ github.token }}
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+    - name: Deploy to ${{ env.environment }}
+      uses: mlibrary/deploy-to-kubernetes@v1
+      with:
+        github_username: ${{ github.actor }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        image: hathitrust/oai_solr-unstable:${{ github.sha }}
+        cluster_ca: ${{ secrets.KUBERNETES_CA }}
+        cluster_server: ${{ secrets.KUBERNETES_SERVER }}
+        namespace_token: ${{ secrets.KUBERNETES_TOKEN }}
+        namespace: ${{ secrets.KUBERNETES_NAMESPACE }}
