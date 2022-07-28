@@ -23,9 +23,7 @@ module OAISolr
     end
 
     def encode _, record
-      xml = slim_marc(record.marc_record).to_xml
-      xml.root.add_attribute("xsi:schemaLocation", [namespace, schema].join(" "))
-      xml.to_s
+      slim_marc(record.marc_record).to_xml_string(fast_but_unsafe: true, include_namespace: true)
     end
 
     # Duplicate the record with only some of the fields

@@ -34,7 +34,7 @@ GEM
     faraday-retry (1.0.3)
     faraday_middleware (1.2.0)
       faraday (~> 1.0)
-    marc (1.1.1)
+    marc (1.2.0)
       rexml
       scrub_rb (>= 1.0.1, < 2)
       unf
@@ -125,7 +125,7 @@ GEM
     tilt (2.0.10)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.8.1)
+    unf_ext (0.0.8.2)
     unicode-display_width (2.1.0)
 
 PLATFORMS
@@ -134,7 +134,7 @@ PLATFORMS
 
 DEPENDENCIES
   ettin
-  marc
+  marc (~> 1.2)
   nokogiri
   oai
   pry
