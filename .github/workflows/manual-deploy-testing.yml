@@ -31,6 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: testing
     steps:
+      - uses: actions/checkout@v2
     # Possible to get this as output from the build job?
       - name: Find commit for tag
         id: tag_check

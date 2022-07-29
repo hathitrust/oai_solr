@@ -21,11 +21,5 @@ RSpec.describe OAISolr::Model do
     it "can find records modified before a given date"
   end
 
-  describe "#page_size" do
-    it "has a default PAGE SIZE" do
-      expect(described_class.new.page_size).to eq(10)
-    end
-  end
-
   describe "resumption tokens"
 end
