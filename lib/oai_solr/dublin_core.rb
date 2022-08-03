@@ -31,6 +31,7 @@ module OAISolr
       @dc["rights"] = rights_statement
       @record.solr_document["oclc"]&.each { |o| @dc["identifier"] << "(OCoLC)#{o}" }
       @record.solr_document["ht_id"].each { |htid| @dc["identifier"] << "#{Settings.handle}#{htid}" }
+      @record.solr_document["isbn"]&.each { |isbn| @dc["identifier"] << isbn }
       @dc
     end
 

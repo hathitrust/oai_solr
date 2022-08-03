@@ -48,8 +48,12 @@ RSpec.describe OAISolr::Record do
       expect(parsed.css("dc|description").text).to eq("2 v. illus., maps 24 cm")
     end
 
-    it "has OCN as an dc:identifier" do
+    it "has OCN as a dc:identifier" do
       expect(parsed.css("dc|identifier").map { |c| c.text }).to include("(OCoLC)562083")
+    end
+
+    it "has ISBN as a dc:identifier" do
+      expect(parsed.css("dc|identifier").map { |c| c.text }).to include("0080117325")
     end
 
     it "has item handle as an dc:identifier" do
