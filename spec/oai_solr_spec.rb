@@ -12,10 +12,10 @@ RSpec.describe "OAISolr" do
     Sinatra::Application
   end
 
-  def existing_record_id
+  def existing_record
     # Independently query solr for a record id that actually exists
     @client = RSolr.connect url: ENV.fetch("SOLR_URL", "http://localhost:9033/solr/catalog")
-    @client.get("select", params: {q: "*:*", wt: "ruby", rows: 1})["response"]["docs"][0]["id"]
+    @client.get("select", params: {q: "*:*", wt: "ruby", rows: 1})["response"]["docs"][0]
   end
 
   def doc
@@ -107,6 +107,18 @@ RSpec.describe "OAISolr" do
       expect(next_page_identifiers.to_set.intersection(page_identifiers)).to be_empty
     end
 
+    it "can limit by from and until" do
+      doc = Nokogiri::XML::Document.parse(last_response.body)
+      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
+      full_list_size = token.attributes["completeListSize"].value
+      before_rec = Date.parse(existing_record["ht_id_update"].min.to_s)
+      get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (before_rec - 30).iso8601, until: (before_rec + 7).iso8601
+      doc = Nokogiri::XML::Document.parse(last_response.body)
+      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
+      limited_list_size = token.attributes["completeListSize"].value
+      expect(limited_list_size.to_i).to be < full_list_size.to_i
+    end
+
     it "can get the complete result set"
     it "gets a useful error with invalid resumption token"
     it_behaves_like "valid oai response"
@@ -143,7 +155,7 @@ RSpec.describe "OAISolr" do
   end
 
   describe "GetRecord DublinCore" do
-    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: existing_record_id }
+    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: existing_record["id"] }
     it_behaves_like "valid oai response"
 
     it "isn't duplicating records" do
@@ -156,7 +168,7 @@ RSpec.describe "OAISolr" do
   end
 
   describe "GetRecord MARC" do
-    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "marc21", identifier: existing_record_id }
+    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "marc21", identifier: existing_record["id"] }
     it_behaves_like "valid oai response"
 
     it "can get a record as MARC" do
