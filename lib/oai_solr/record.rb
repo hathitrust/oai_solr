@@ -31,7 +31,7 @@ module OAISolr
     # directory for ease/speed here
     # @return [MARC::Record]
     def marc_record
-      @record ||= MARC::XMLReader.new(StringIO.new(solr_document["fullrecord"])).first
+      @record ||= MARC::XMLReader.new(StringIO.new(solr_document["fullrecord"]), parser: "nokogiri").first
     end
 
     # @param [String] field Name of the field

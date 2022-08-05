@@ -3,12 +3,12 @@ require "oai"
 
 module OAISolr
   class Marc21
-    SLIM_MARC_FIELDS = {'010': "a", '015': "a", '020': "a", '022': "a",
-                        '035': "a", '041': "ah", '050': "ab", '082': "ab",
-                        '100': "abcdq", '110': "ab", '111': "ab", '130': "ab",
-                        '240': "a", '245': "abc", '250': "ab",
-                        '260': "abc", '265': "abc", '300': "a", '600': "abcdqxyz",
-                        '610..699': "axyz"}
+    SLIM_MARC_FIELDS = {"010": "a", "015": "a", "020": "a", "022": "a",
+                        "035": "a", "041": "ah", "050": "ab", "082": "ab",
+                        "100": "abcdq", "110": "ab", "111": "ab", "130": "ab",
+                        "240": "a", "245": "abc", "250": "ab",
+                        "260": "abc", "265": "abc", "300": "a", "600": "abcdqxyz",
+                        "610..699": "axyz"}
 
     def prefix
       "marc21"
@@ -23,9 +23,7 @@ module OAISolr
     end
 
     def encode _, record
-      xml = slim_marc(record.marc_record).to_xml
-      xml.root.add_attribute("xsi:schemaLocation", [namespace, schema].join(" "))
-      xml.to_s
+      slim_marc(record.marc_record).to_xml_string(fast_but_unsafe: true, include_namespace: true)
     end
 
     # Duplicate the record with only some of the fields

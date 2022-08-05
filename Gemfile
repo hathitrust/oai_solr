@@ -7,9 +7,10 @@ source "https://rubygems.org"
 gem "sinatra", "~> 2.2"
 gem "puma"
 gem "oai"
-gem "marc"
+gem "marc", "~> 1.2"
 gem "rsolr"
 gem "ettin"
+gem "nokogiri"
 
 group :development, :test do
   gem "pry"
@@ -18,5 +19,4 @@ group :development, :test do
   gem "simplecov"
   gem "rack-test"
   gem "sinatra-contrib"
-  gem "nokogiri"
 end
