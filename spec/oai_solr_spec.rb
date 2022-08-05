@@ -110,11 +110,16 @@ RSpec.describe "OAISolr" do
   end
 
   describe "GetRecord DublinCore" do
-    # TODO: use record identifier known to be in sample solr
     before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: existing_record_id }
     it_behaves_like "valid oai response"
 
-    it "can get a record as dublin core"
+    it "isn't duplicating records" do
+      first_title = /<dc:title>(.*)<.dc:title>/.match(last_response.body)[1]
+      id = @client.get("select", params: {q: "*:*", wt: "ruby", rows: 2})["response"]["docs"][1]["id"]
+      get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: id
+      second_title = /<dc:title>(.*)<.dc:title>/.match(last_response.body)[1]
+      expect(first_title).to_not eq(second_title)
+    end
   end
 
   describe "GetRecord MARC" do

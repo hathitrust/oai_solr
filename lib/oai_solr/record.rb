@@ -27,20 +27,6 @@ module OAISolr
       OAISolr::DublinCore.instance.encode(nil, self)
     end
 
-    #     # this is an alternative to using to_oai_dc and our DublinCore class
-    #     # It relies on on OAI::Provider::Metadata::Format to use the built in
-    #     # DublinCore format and record.respond_to?.
-    #     # Both approaches result in an invalid OAI response
-    #     def dc_hash
-    #       @dc_hash ||= marc_record.to_dublin_core
-    #     end
-    #
-    #     [:title, :creator, :subject, :description, :publisher, :date, :type, :format, :identifier, :source, :language, :relation, :coverage, :rights].each do |dc_attr|
-    #       define_method dc_attr do
-    #         dc_hash[dc_attr.to_s] || []
-    #       end
-    #     end
-
     # TODO: Think about just storing the marc-in-json hash; trading the increase in the size of the solr
     # directory for ease/speed here
     # @return [MARC::Record]

@@ -50,9 +50,8 @@ module OAISolr
     # @param [MARC::Field]
     # @return [MARC::Field]
     def field974_to_field856(field974)
-      handle = "http://hdl.handle.net/2027/"
       MARC::DataField.new("856", "4", "1",
-        ["u", handle + field974["u"]],
+        ["u", Settings.handle + field974["u"]],
         ["z", field974["z"]],
         ["x", "eContent"],
         ["r", field974["r"]])

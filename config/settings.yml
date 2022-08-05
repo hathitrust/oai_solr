@@ -4,3 +4,4 @@ repository_url: "http://localhost.default.invalid:4567/oai"
 record_prefix: "oai:localhost.default.invalid"
 admin_email: "admin@default.invalid"
 page_size: 10
+handle: "http://hdl.handle.net/2027/"
