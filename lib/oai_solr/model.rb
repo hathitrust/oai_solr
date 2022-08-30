@@ -1,6 +1,8 @@
+require "nokogiri"
 require "oai"
 require "rsolr"
 require "oai_solr/record"
+require "oai_solr/set"
 
 module OAISolr
   class Model < OAI::Provider::Model
@@ -15,7 +17,7 @@ module OAISolr
     end
 
     def sets
-      nil
+      Settings.sets.map { |spec| OAISolr::Set.new(spec: spec.to_s) }
     end
 
     def find(selector, opts = {})
@@ -32,16 +34,21 @@ module OAISolr
     def find_all(opts)
       (cursor_mark, opts) = restore_options(opts)
 
-      response = @client.get("select", params: {
+      params = {
         q: "*:*",
         wt: "ruby",
         rows: Settings.page_size,
         cursorMark: cursor_mark,
         sort: "id asc"
-      })
+      }
+      unless opts[:set].nil?
+        set = OAISolr::Set.new(spec: opts[:set])
+        params[:fq] = set.fq
+      end
+      response = @client.get("select", params: params)
 
       OAI::Provider::PartialResult.new(
-        response["response"]["docs"].map { |doc| OAISolr::Record.new(doc) },
+        response["response"]["docs"].map { |doc| OAISolr::Record.new(prune_doc(doc, opts[:set])) },
         resumption_token(opts, response)
       )
     end
@@ -68,6 +75,20 @@ module OAISolr
         nil,
         response["response"]["numFound"]
       )
+    end
+
+    # Remove 974 datafield for any HT volumes that do not belong in the set, if any.
+    def prune_doc(doc, spec)
+      return doc if spec.nil?
+
+      xml = Nokogiri::XML::Document.parse(doc["fullrecord"])
+      pd_xpath = "//xmlns:datafield[@tag='974']/xmlns:subfield[@code='r'][normalize-space(text())!='pd']"
+      pdus_xpath = "//xmlns:datafield[@tag='974']/xmlns:subfield[@code='r'][normalize-space(text())!='pdus' and normalize-space(text())!='pd']"
+      xpath = spec == "hathitrust:pd" ? pd_xpath : pdus_xpath
+      nodes = xml.xpath(xpath)
+      nodes.each { |node| node.parent.remove }
+      doc["fullrecord"] = xml.to_xml
+      doc
     end
   end
 end
