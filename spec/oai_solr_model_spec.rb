@@ -16,7 +16,7 @@ RSpec.describe OAISolr::Model do
     it "returns the configured sets" do
       expect(model.sets).to be_instance_of(Array)
       expect(model.sets.count).to be > 0
-      expect(model.sets).to all(be_instance_of(OAISolr::Set))
+      expect(model.sets).to all(be_kind_of(OAISolr::Set))
     end
   end
 
