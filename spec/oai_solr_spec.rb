@@ -20,6 +20,10 @@ RSpec.describe "OAISolr" do
     @client.get("select", params: {q: "*:*", wt: "ruby", rows: 1})["response"]["docs"][0]["id"]
   end
 
+  def doc
+    Nokogiri::XML::Document.parse(last_response.body)
+  end
+
   shared_examples "valid oai response" do
     it "returns ok" do
       expect(last_response).to be_ok
@@ -47,12 +51,10 @@ RSpec.describe "OAISolr" do
     it_behaves_like "valid oai response"
 
     it "claims to support dublin core" do
-      doc = Nokogiri::XML::Document.parse(last_response.body)
       expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).to include("oai_dc")
     end
 
     it "claims to support marc21" do
-      doc = Nokogiri::XML::Document.parse(last_response.body)
       expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).to include("marc21")
     end
   end
@@ -60,9 +62,16 @@ RSpec.describe "OAISolr" do
   describe "ListSets" do
     before(:each) { get oai_endpoint, verb: "ListSets" }
     it_behaves_like "valid oai response"
-    it "includes hathitrust:pd"
-    it "includes hathitrust:pdus"
-    it "includes hathitrust:ump"
+
+    it "includes hathitrust:pd" do
+      expect(doc.xpath("//xmlns:setSpec").map { |mp| mp.content }).to include("hathitrust:pd")
+    end
+
+    it "includes hathitrust:pdus" do
+      expect(doc.xpath("//xmlns:setSpec").map { |mp| mp.content }).to include("hathitrust:pdus")
+    end
+
+    xit "includes hathitrust:ump"
   end
 
   describe "ListIdentifiers" do
@@ -75,24 +84,20 @@ RSpec.describe "OAISolr" do
     before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "oai_dc" }
 
     it "provides a page of N results" do
-      doc = Nokogiri::XML::Document.parse(last_response.body)
       expect(doc.xpath("count(//xmlns:ListRecords/xmlns:record)")).to eq(OAISolr::Settings.page_size)
     end
 
     it "provides resumption token" do
-      doc = Nokogiri::XML::Document.parse(last_response.body)
       token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
       expect(token.text).not_to be(nil)
     end
 
     it "resumption token has complete list size" do
-      doc = Nokogiri::XML::Document.parse(last_response.body)
       token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
       expect(token.attributes["completeListSize"].value).to match(/^\d+/)
     end
 
     it "can fetch additional pages of N results" do
-      doc = Nokogiri::XML::Document.parse(last_response.body)
       page_identifiers = doc.xpath("//xmlns:identifier").map(&:text)
       token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
 
@@ -107,6 +112,36 @@ RSpec.describe "OAISolr" do
     it "can get the complete result set"
     it "gets a useful error with invalid resumption token"
     it_behaves_like "valid oai response"
+  end
+
+  describe "ListRecords in hathitrust:pd set" do
+    before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", set: "hathitrust:pd" }
+    let(:ns_map) { {"marc" => "http://www.loc.gov/MARC21/slim"} }
+    it_behaves_like "valid oai response"
+
+    it "provides a page of N results" do
+      expect(doc.xpath("count(//xmlns:ListRecords/xmlns:record)")).to eq(OAISolr::Settings.page_size)
+    end
+
+    it "does not include non-pd volumes" do
+      expect(doc.xpath("count(//marc:datafield[@tag='856']/marc:subfield[@code='r'][normalize-space(text())='ic' or normalize-space(text())='und' or normalize-space(text())='pdus'])", ns_map)).to be == 0
+      expect(doc.xpath("count(//marc:datafield[@tag='856']/marc:subfield[@code='r'][normalize-space(text())='pd'])", ns_map)).to be > 0
+    end
+  end
+
+  describe "ListRecords in hathitrust:pdus set" do
+    before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", set: "hathitrust:pdus" }
+    let(:ns_map) { {"marc" => "http://www.loc.gov/MARC21/slim"} }
+    it_behaves_like "valid oai response"
+
+    it "provides a page of N results" do
+      expect(doc.xpath("count(//xmlns:ListRecords/xmlns:record)")).to eq(OAISolr::Settings.page_size)
+    end
+
+    it "does not include non-pd/non-pdus volumes" do
+      expect(doc.xpath("count(//marc:datafield[@tag='856']/marc:subfield[@code='r'][normalize-space(text())='ic' or normalize-space(text())='und'])", ns_map)).to be == 0
+      expect(doc.xpath("count(//marc:datafield[@tag='856']/marc:subfield[@code='r'][normalize-space(text())='pd' or normalize-space(text())='pdus'])", ns_map)).to be > 0
+    end
   end
 
   describe "GetRecord DublinCore" do

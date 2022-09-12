@@ -29,6 +29,8 @@ services:
 
   solr-sdr-catalog:
     image: ghcr.io/hathitrust/catalog-solr-sample
+    ports:
+      - "9033:9033"
 
 volumes:
   gem_cache:
