@@ -3,8 +3,6 @@ require "rack/test"
 require "nokogiri"
 require "set"
 
-require_relative "../oai_solr"
-
 RSpec.describe "OAISolr" do
   include Rack::Test::Methods
 

@@ -34,6 +34,10 @@ module OAISolr
       @record ||= MARC::XMLReader.new(StringIO.new(solr_document["fullrecord"]), parser: "nokogiri").first
     end
 
+    def deleted?
+      solr_value("deleted")
+    end
+
     # @param [String] field Name of the field
     # @return [String, Numeric, NilClass] The found value, or nil if not found
     def solr_value(field)
@@ -58,7 +62,11 @@ module OAISolr
     end
 
     def updated_at
-      Date.parse(solr_document["ht_id_update"].max.to_s).to_time
+      if (ht_id_update = solr_value("ht_id_update"))
+        Date.parse(ht_id_update.max.to_s).to_time
+      else
+        last_indexed.to_time
+      end
     end
   end
 end

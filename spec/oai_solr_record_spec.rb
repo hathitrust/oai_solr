@@ -4,14 +4,27 @@ require "oai_solr/record"
 require "nokogiri"
 
 RSpec.describe OAISolr::Record do
-  let(:sdoc) { JSON.parse(File.read("spec/data/000007599.json")) }
-  let(:rec) { described_class.new(sdoc) }
-  let(:parsed) { Nokogiri::XML::Document.parse(rec.to_oai_dc) }
-  let(:oai_dc_schema) do
-    Nokogiri::XML::Schema(File.open(File.dirname(__FILE__) + "/schemas/oai_dc.xsd"))
+  context "with a deleted record" do
+    let(:sdoc) { JSON.parse(File.read("spec/data/deleted_item.json")) }
+    let(:rec) { described_class.new(sdoc) }
+
+    it "knows it is deleted" do
+      expect(rec).to be_deleted
+    end
+
+    it "can get updated_at" do
+      expect(rec.updated_at).to respond_to(:utc)
+    end
   end
 
   describe "#to_oai_dc" do
+    let(:sdoc) { JSON.parse(File.read("spec/data/000007599.json")) }
+    let(:rec) { described_class.new(sdoc) }
+    let(:parsed) { Nokogiri::XML::Document.parse(rec.to_oai_dc) }
+    let(:oai_dc_schema) do
+      Nokogiri::XML::Schema(File.open(File.dirname(__FILE__) + "/schemas/oai_dc.xsd"))
+    end
+
     xit "provides valid dublin core" do
       parsed = Nokogiri::XML::Document.parse(rec.to_oai_dc)
       expect(oai_dc_schema.valid?(parsed)).to be true

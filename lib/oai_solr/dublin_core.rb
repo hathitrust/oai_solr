@@ -1,5 +1,4 @@
 require "oai"
-require "pry"
 
 module OAISolr
   class DublinCore < OAI::Provider::Metadata::DublinCore
