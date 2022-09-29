@@ -10,7 +10,7 @@ require "oai_solr/dublin_core"
 
 module OAISolr
   class Record
-    attr_accessor :solr_document, :dc_hash
+    attr_accessor :solr_document
 
     # @param [Hash] solr_document Hash representation of the solr document
     def initialize(solr_document)

@@ -17,6 +17,15 @@ RSpec.describe OAISolr::Record do
     end
   end
 
+  context "with a record with no 300 field" do
+    let(:sdoc) { JSON.parse(File.read("spec/data/000004150.json")) }
+    let(:rec) { described_class.new(sdoc) }
+
+    it "can get oai_dc" do
+      expect(rec.to_oai_dc).not_to be nil
+    end
+  end
+
   describe "#to_oai_dc" do
     let(:sdoc) { JSON.parse(File.read("spec/data/000007599.json")) }
     let(:rec) { described_class.new(sdoc) }
@@ -26,7 +35,6 @@ RSpec.describe OAISolr::Record do
     end
 
     xit "provides valid dublin core" do
-      parsed = Nokogiri::XML::Document.parse(rec.to_oai_dc)
       expect(oai_dc_schema.valid?(parsed)).to be true
     end
 
