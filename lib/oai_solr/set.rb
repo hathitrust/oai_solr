@@ -2,7 +2,7 @@
 
 module OAISolr
   class Set
-    attr_reader :name, :spec, :filter_query, :filter_xpath
+    attr_reader :name, :spec, :filter_query, :exclusion_filter
 
     SET_NAMES = {
       "hathitrust:pd" => "Public domain and open access works viewable worldwide",
@@ -14,10 +14,32 @@ module OAISolr
       "hathitrust:pdus" => ["ht_searchonly:false", "ht_searchonly_intl:true"]
     }.freeze
 
-    # xpaths for identifying irrelevant HT ids and removing them from the containing MARC XML
-    SET_FILTER_XPATHS = {
-      "hathitrust:pd" => "//xmlns:datafield[@tag='974']/xmlns:subfield[@code='r'][normalize-space(text())!='pd']",
-      "hathitrust:pdus" => "//xmlns:datafield[@tag='974']/xmlns:subfield[@code='r'][normalize-space(text())!='pdus' and normalize-space(text())!='pd']"
+    # Exclusion filters: xpaths for irrelevant HTIDs that can be removed from the containing MARC.
+    # Note: 'umall' is no longer a valid rights attribute but is included here for completeness
+    # as it still has an entry in ht_rights.attributes
+    SET_PD_EXCLUSION_FILTER = <<~SET_PD_EXCLUSION_FILTER
+      //xmlns:datafield[@tag='974']/xmlns:subfield[@code='r'][normalize-space(text())='ic'
+      or normalize-space(text())='op'
+      or normalize-space(text())='orph'
+      or normalize-space(text())='und'
+      or normalize-space(text())='umall'
+      or normalize-space(text())='nobody'
+      or normalize-space(text())='pdus'
+      or normalize-space(text())='orphcand'
+      or normalize-space(text())='und-world'
+      or normalize-space(text())='icus'
+      or normalize-space(text())='pd-pvt'
+      or normalize-space(text())='supp'
+      ]
+    SET_PD_EXCLUSION_FILTER
+
+    SET_PDUS_EXCLUSION_FILTER = <<~SET_PDUS_EXCLUSION_FILTER
+      //xmlns:datafield[@tag='974']/xmlns:subfield[@code='r'][normalize-space(text())!='pdus']
+    SET_PDUS_EXCLUSION_FILTER
+
+    SET_EXCLUSION_FILTERS = {
+      "hathitrust:pd" => SET_PD_EXCLUSION_FILTER,
+      "hathitrust:pdus" => SET_PDUS_EXCLUSION_FILTER
     }.freeze
 
     def self.for_spec(set_spec = nil)
@@ -28,7 +50,7 @@ module OAISolr
       @spec = ""
       @name = ""
       @filter_query = []
-      @filter_xpath = nil
+      @exclusion_filter = nil
     end
   end
 
@@ -39,7 +61,7 @@ module OAISolr
       @spec = set_spec
       @name = SET_NAMES[set_spec]
       @filter_query = SET_FILTER_QUERIES[set_spec]
-      @filter_xpath = SET_FILTER_XPATHS[set_spec]
+      @exclusion_filter = SET_EXCLUSION_FILTERS[set_spec]
     end
   end
 end

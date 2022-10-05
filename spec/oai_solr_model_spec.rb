@@ -1,4 +1,4 @@
-require "rspec"
+require "spec_helper"
 require "oai_solr/model"
 
 RSpec.describe OAISolr::Model do

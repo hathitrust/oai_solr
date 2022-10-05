@@ -1,4 +1,4 @@
-require "rspec"
+require "spec_helper"
 require "oai_solr/partial_result"
 
 RSpec.describe OAISolr::PartialResult do
