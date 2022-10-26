@@ -1,4 +1,4 @@
-require "rspec"
+require "spec_helper"
 require "oai_solr/record"
 require "oai_solr/marc21"
 require "json"

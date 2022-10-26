@@ -33,9 +33,9 @@ module OAISolr
     # Note: this is a hack that modifies the SOLR record in place before passing it to
     # OAISolr::Record. A better approach might be to alter the OAISolr::Record after it
     # is created, in a way that doesn't require it to keep track of what set it is
-    # supposed to belong to, perhaps be telling it to jettison certain subfields.
+    # supposed to belong to, perhaps by telling it to jettison certain subfields.
     def prune_doc(doc)
-      xpath = @set.filter_xpath
+      xpath = @set.exclusion_filter
       return doc if xpath.nil?
 
       xml = Nokogiri::XML::Document.parse(doc["fullrecord"])

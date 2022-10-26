@@ -1,3 +1,4 @@
+require "spec_helper"
 require "json"
 require "oai_solr/record"
 require "nokogiri"

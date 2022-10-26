@@ -1,4 +1,4 @@
-require "rspec"
+require "spec_helper"
 require "rack/test"
 require "nokogiri"
 require "set"
