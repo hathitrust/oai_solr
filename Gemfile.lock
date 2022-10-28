@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/hathitrust/rights_database.git
+  revision: 2d152f9e2079a7f2997de6cc9fdb783d5ee1f030
+  specs:
+    rights_database (0.1.0)
+      mysql2
+      sequel
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -24,6 +32,7 @@ GEM
     multi_json (1.15.0)
     mustermann (2.0.2)
       ruby2_keywords (~> 0.0.1)
+    mysql2 (0.5.4)
     nio4r (2.5.8)
     nokogiri (1.13.8-x86_64-darwin)
       racc (~> 1.4)
@@ -84,6 +93,7 @@ GEM
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
     scrub_rb (1.0.1)
+    sequel (5.61.0)
     simplecov (0.21.2)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -123,6 +133,7 @@ DEPENDENCIES
   pry
   puma
   rack-test
+  rights_database!
   rsolr
   rspec
   simplecov
