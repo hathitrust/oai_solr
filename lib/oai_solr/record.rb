@@ -36,6 +36,24 @@ module OAISolr
 
     def deleted?
       solr_value("deleted")
+    end 
+
+    # Filter fields out of a record that don't return a truthy value from the block.
+    # This is destructive on the record
+    # @yieldreturn [Boolean] Whether to keep a given field
+    # @return [OAISolr::Record] self
+    def keep_fields!(&blk)
+      marc_record.fields.delete_if { |f| !blk.call(f) }
+      self
+    end
+
+    # Filter fields out of a record that return a truthy value from the block.
+    # This is destructive on the record
+    # @yieldreturn [Boolean] Whether to remove a given field
+    # @return [OAISolr::Record] self
+    def remove_fields!(&blk)
+      marc_record.fields.delete_if { |f| blk.call(f) }
+      self
     end
 
     # @param [String] field Name of the field
@@ -53,7 +71,8 @@ module OAISolr
         []
       when Array
         val
-      else Array(val)
+      else
+        Array(val)
       end
     end
 

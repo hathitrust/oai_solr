@@ -1,5 +1,6 @@
 require "spec_helper"
 require "oai_solr/set"
+require "nokogiri"
 
 RSpec.describe OAISolr::Set do
   shared_examples "a valid Set" do
@@ -22,10 +23,6 @@ RSpec.describe OAISolr::Set do
     it "has a nonempty spec" do
       expect(set.spec.length).to be > 0
     end
-
-    it "has a filter xpath String" do
-      expect(set.exclusion_filter).to be_instance_of(String)
-    end
   end
 
   describe "Set" do
@@ -36,8 +33,8 @@ RSpec.describe OAISolr::Set do
       expect(set.spec).to eq("")
     end
 
-    it "has a nil filter xpath" do
-      expect(set.exclusion_filter).to be_nil
+    it "has no restrictions on rights codes" do
+      expect(set.excluded_rights_codes.count).to equal 0
     end
   end
 
@@ -56,33 +53,9 @@ RSpec.describe OAISolr::Set do
         expect(set.spec).to eq("hathitrust:pd")
       end
 
-      it "produces a working filter xpath" do
-        fake_marc_xml = <<~MARC
-          <?xml version="1.0" encoding="UTF-8"?>
-          <collection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/MARC21/slim" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">
-            <record>
-              <datafield tag="974">
-                <subfield code="r">pd</subfield>
-              </datafield>
-              <datafield tag="974">
-                <subfield code="r">ic</subfield>
-              </datafield>
-              <datafield tag="974">
-                <subfield code="r">ic-world</subfield>
-              </datafield>
-              <datafield tag="974">
-                <subfield code="r">cc-by-nc-4.0</subfield>
-              </datafield>
-              <datafield tag="974">
-                <subfield code="r">cc-zero</subfield>
-              </datafield>
-            </record>
-          </collection>
-        MARC
-        xml = Nokogiri::XML::Document.parse(fake_marc_xml)
-        nodes = xml.xpath(set.exclusion_filter)
-        # Leave everything but the ic
-        expect(nodes.count).to be == 1
+      it "has a set of restricted rights codes" do
+        expect(set.excluded_rights_codes.count).to be > 0
+        expect(set.excluded_rights_codes).to include("pdus")
       end
     end
 
@@ -94,27 +67,9 @@ RSpec.describe OAISolr::Set do
         expect(set.spec).to eq("hathitrust:pdus")
       end
 
-      it "produces a working filter xpath" do
-        fake_marc_xml = <<~MARC
-          <?xml version="1.0" encoding="UTF-8"?>
-          <collection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/MARC21/slim" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">
-            <record>
-              <datafield tag="974">
-                <subfield code="r">pd</subfield>
-              </datafield>
-              <datafield tag="974">
-                <subfield code="r">pdus</subfield>
-              </datafield>
-              <datafield tag="974">
-                <subfield code="r">ic</subfield>
-              </datafield>
-            </record>
-          </collection>
-        MARC
-        xml = Nokogiri::XML::Document.parse(fake_marc_xml)
-        nodes = xml.xpath(set.exclusion_filter)
-        # Filter pd and ic, leave pdus
-        expect(nodes.count).to be == 2
+      it "has a set of restricted rights codes" do
+        expect(set.excluded_rights_codes.count).to be > 0
+        expect(set.excluded_rights_codes).not_to include("pdus")
       end
     end
   end

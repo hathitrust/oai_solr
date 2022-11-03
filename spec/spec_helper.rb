@@ -1,6 +1,7 @@
 require_relative "../oai_solr"
 require "simplecov"
 require "simplecov-lcov"
+require "oai_solr/settings"
 
 SimpleCov::Formatter::LcovFormatter.config do |c|
   c.report_with_single_file = true
