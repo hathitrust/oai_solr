@@ -34,7 +34,7 @@ RSpec.describe "OAISolr" do
     it "returns valid xml according to the OAI schema" do
       Dir.mktmpdir do |tmpdir|
         File.write("#{tmpdir}/last_response.xml", last_response.body)
-        expect(system("StdInParse -f -n -s -v=always < #{tmpdir}/last_response.xml")).to be true
+        expect(system("validateCache #{__dir__}/../config/schema.cache #{tmpdir}/last_response.xml > /dev/null")).to be true
       end
     end
   end
