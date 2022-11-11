@@ -10,7 +10,7 @@ require "oai_solr/dublin_core"
 
 module OAISolr
   class Record
-    attr_accessor :solr_document, :dc_hash
+    attr_accessor :solr_document
 
     # @param [Hash] solr_document Hash representation of the solr document
     def initialize(solr_document)
@@ -32,6 +32,10 @@ module OAISolr
     # @return [MARC::Record]
     def marc_record
       @record ||= MARC::XMLReader.new(StringIO.new(solr_document["fullrecord"]), parser: "nokogiri").first
+    end
+
+    def deleted?
+      solr_value("deleted")
     end
 
     # @param [String] field Name of the field
@@ -58,7 +62,11 @@ module OAISolr
     end
 
     def updated_at
-      Date.parse(solr_document["ht_id_update"].max.to_s).to_time
+      if (ht_id_update = solr_value("ht_id_update"))
+        Date.parse(ht_id_update.max.to_s).to_time
+      else
+        last_indexed.to_time
+      end
     end
   end
 end

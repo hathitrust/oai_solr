@@ -13,6 +13,8 @@ WORKDIR /usr/src/app
 ENV BUNDLE_PATH /gems
 #
 RUN gem install bundler
+
+COPY --from=ghcr.io/hathitrust/feed /usr/local/feed/bin/validateCache /usr/local/bin/validateCache
 #
 # COPY . /usr/src/app
 

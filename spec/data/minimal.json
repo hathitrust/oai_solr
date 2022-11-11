@@ -1,0 +1,33 @@
+{
+  "id": "000004150",
+  "fullrecord": "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <collection xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.loc.gov/MARC21/slim\" xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\"> <record> <leader>00818nam a22002291  4500</leader> <controlfield tag=\"001\">000004150</controlfield> <controlfield tag=\"003\">MiAaHDL</controlfield> <controlfield tag=\"005\">20211202000000.0</controlfield> <controlfield tag=\"006\">m        d        </controlfield> <controlfield tag=\"007\">cr bn ---auaua</controlfield> <controlfield tag=\"008\">720419s1915    enk           000 0 eng d</controlfield> <datafield tag=\"245\" ind1=\"1\" ind2=\"0\"> <subfield code=\"a\">Zionism and the state</subfield> <subfield code=\"c\">by H. Sacher.</subfield> </datafield> <datafield tag=\"974\" ind1=\" \" ind2=\" \"> <subfield code=\"b\">MIU</subfield> <subfield code=\"c\">MIU</subfield> <subfield code=\"d\">20211203</subfield> <subfield code=\"s\">google</subfield> <subfield code=\"u\">mdp.39015036727017</subfield> <subfield code=\"y\">1915</subfield> <subfield code=\"r\">pdus</subfield> <subfield code=\"q\">bib</subfield> <subfield code=\"t\">non-US bib date1 between 1897 and 1927</subfield> </datafield> </record> </collection>",
+  "title": [
+    "Zionism and the state"
+  ],
+  "ht_availability": [
+    "Full text"
+  ],
+  "ht_availability_intl": [
+    "Search only"
+  ],
+  "ht_count": 1,
+  "ht_id": [
+    "mdp.39015036727017"
+  ],
+  "ht_id_display": [
+    "mdp.39015036727017|20211203||1915|1910-1919|||Zionism and the state by H. Sacher"
+  ],
+  "ht_id_update": [
+    20211203
+  ],
+  "ht_rightscode": [
+    "pdus"
+  ],
+  "htsource": [
+    "University of Michigan"
+  ],
+  "ht_json": "[{\"htid\":\"mdp.39015036727017\",\"newly_open\":null,\"ingest\":\"20211203\",\"rights\":[\"pdus\",null],\"heldby\":[\"columbia\",\"mcgill\",\"universityofcalifornia\",\"umich\",\"utexas\"],\"collection_code\":\"miu\",\"enum_pubdate\":\"1915\",\"enum_pubdate_range\":\"1910-1919\",\"dig_source\":\"google\"}]",
+  "ht_searchonly": false,
+  "deleted": false,
+  "time_of_index": "2022-09-20T13:10:49.850Z"
+}
