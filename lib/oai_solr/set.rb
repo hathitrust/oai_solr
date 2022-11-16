@@ -36,7 +36,7 @@ module OAISolr
     # to return for a given set.
     # @param [OAISolr::Record] rec Record to potentially munch
     # @return [OAISolr::Record] Munged record
-    def filter_record_fields(rec)
+    def remove_unwanted_974s(rec)
       # no filtering for full set
       rec
     end
@@ -62,7 +62,7 @@ module OAISolr
       @excluded_rights_codes = Settings.sets[set_spec]["excluded_rights"]
     end
 
-    def filter_record_fields(r)
+    def remove_unwanted_974s(r)
       r.remove_fields! { |f| f.tag == "974" and excluded_rights_codes.include?(f["r"]) }
       r
     end

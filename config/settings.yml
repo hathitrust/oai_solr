@@ -12,6 +12,6 @@ sets:
     excluded_rights: [ic, op, orph, und, umall, nobody, orphcand, und-world, icus, pd-pvt, supp, pdus ]
   "hathitrust:pdus":
     name: "Public domain works according to copyright law in the United States"
-    filter_query: ["ht_searchonly:false", "ht_searchonly_intl:false"]
+    filter_query: ["ht_searchonly:false", "ht_searchonly_intl:true"]
     excluded_rights: [ic, op, orph, und, umall, nobody, orphcand, und-world, icus, pd-pvt, supp ]
 

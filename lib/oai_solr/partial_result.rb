@@ -24,7 +24,7 @@ module OAISolr
     def records
       @response["response"]["docs"]
         .map { |doc| OAISolr::Record.new(doc) }
-        .map { |rec| @set.filter_record_fields(rec) }
+        .map { |rec| @set.remove_unwanted_974s(rec) }
         .select { |rec| @set.include_record?(rec) }
     end
 
