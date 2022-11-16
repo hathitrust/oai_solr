@@ -4,6 +4,9 @@ require "oai_solr/model"
 RSpec.describe OAISolr::Model do
   let(:model) { described_class.new }
 
+  # number of items in sample solr
+  let(:total_docs) { 2000 }
+
   describe "#earliest" do
     it "returns the earliest last modified record date available" do
       # We will just use beginning of the epoch because the point is a null limit
@@ -28,15 +31,28 @@ RSpec.describe OAISolr::Model do
   end
 
   describe "#find" do
-    it "can find a single record"
-    it "can find all records" do
-      partial_result = described_class.new.find(:all)
-      expect(partial_result.token.total).to eq(2000)
+    it "can find a single record" do
+      id = existing_record["id"]
+      expect(model.find(id, {}).solr_value("id")).to eq(id)
     end
 
-    it "can find records modified since a given date"
-    it "can find records modified before a given date"
-  end
+    it "can find all records" do
+      partial_result = described_class.new.find(:all)
+      expect(partial_result.records.length).to eq(OAISolr::Settings.page_size)
+      expect(partial_result.token.total).to eq(total_docs)
+    end
 
-  describe "resumption tokens"
+    # dates based on sample records
+    it "can find records modified since a given date" do
+      expect(described_class.new.find(:all, {from: Date.parse("2022-05-01"), until: Date.today}).records.map { |r| r.solr_document["ht_id_update"] }).to all(include(be >= 20220501))
+    end
+
+    it "can find records modified before a given date" do
+      expect(described_class.new.find(:all, {from: Time.at(0).to_date, until: Date.parse("2021-09-25")}).records.map { |r| r.solr_document["ht_id_update"] }).to all(include(be <= 20210925))
+    end
+
+    it "interprets from as >= and to as <=" do
+      expect(described_class.new.find(:all, {from: Date.parse("2021-09-25"), until: Date.parse("2021-09-25")}).records.map { |r| r.solr_document["ht_id_update"] }).to all(include(eq 20210925))
+    end
+  end
 end

@@ -7,15 +7,13 @@ RSpec.describe "OAISolr" do
   include Rack::Test::Methods
 
   let(:oai_endpoint) { "/oai" }
+  # number of items in sample solr
+  let(:total_docs) { 2000 }
+  let(:min_htid_update) { Date.parse(existing_record["ht_id_update"].min.to_s) }
+  let(:max_htid_update) { Date.parse(existing_record["ht_id_update"].max.to_s) }
 
   def app
     Sinatra::Application
-  end
-
-  def existing_record
-    # Independently query solr for a record id that actually exists
-    @client = RSolr.connect url: ENV.fetch("SOLR_URL", "http://localhost:9033/solr/catalog")
-    @client.get("select", params: {q: "*:*", wt: "ruby", rows: 1})["response"]["docs"][0]
   end
 
   def doc
@@ -107,16 +105,30 @@ RSpec.describe "OAISolr" do
       expect(next_page_identifiers.to_set.intersection(page_identifiers)).to be_empty
     end
 
-    it "can limit by from and until" do
-      doc = Nokogiri::XML::Document.parse(last_response.body)
-      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
-      full_list_size = token.attributes["completeListSize"].value
-      before_rec = Date.parse(existing_record["ht_id_update"].min.to_s)
-      get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (before_rec - 30).iso8601, until: (before_rec + 7).iso8601
-      doc = Nokogiri::XML::Document.parse(last_response.body)
-      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
-      limited_list_size = token.attributes["completeListSize"].value
-      expect(limited_list_size.to_i).to be < full_list_size.to_i
+    describe "date ranges" do
+      it "can limit by from and until" do
+        date = min_htid_update
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (date - 30).iso8601, until: (date + 7).iso8601
+        doc = Nokogiri::XML::Document.parse(last_response.body)
+        token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
+        limited_list_size = token.attributes["completeListSize"].value
+        expect(limited_list_size.to_i).to be < total_docs
+      end
+
+      it "limiting by from with the max update date gives no results" do
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (max_htid_update + 1).iso8601
+        doc = Nokogiri::XML::Document.parse(last_response.body)
+        error = doc.xpath("//xmlns:error")[0]
+        expect(error.to_s).to match(/empty list/)
+      end
+
+      it "can limit by until" do
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", until: min_htid_update.iso8601
+        doc = Nokogiri::XML::Document.parse(last_response.body)
+        token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
+        limited_list_size = token.attributes["completeListSize"].value
+        expect(limited_list_size.to_i).to be < total_docs
+      end
     end
 
     it "can get the complete result set"
@@ -160,7 +172,7 @@ RSpec.describe "OAISolr" do
 
     it "isn't duplicating records" do
       first_title = /<dc:title>(.*)<.dc:title>/.match(last_response.body)[1]
-      id = @client.get("select", params: {q: "*:*", wt: "ruby", rows: 2})["response"]["docs"][1]["id"]
+      id = solr_client.get("select", params: {q: "*:*", wt: "ruby", rows: 2})["response"]["docs"][1]["id"]
       get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: id
       second_title = /<dc:title>(.*)<.dc:title>/.match(last_response.body)[1]
       expect(first_title).to_not eq(second_title)

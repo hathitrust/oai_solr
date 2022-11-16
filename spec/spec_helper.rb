@@ -108,3 +108,12 @@ RSpec.configure do |config|
   #   # as the one that triggered the failure.
   #   Kernel.srand config.seed
 end
+
+def solr_client
+  RSolr.connect url: ENV.fetch("SOLR_URL", "http://localhost:9033/solr/catalog")
+end
+
+def existing_record
+  # Independently query solr for a record id that actually exists
+  solr_client.get("select", params: {q: "*:*", wt: "ruby", rows: 1})["response"]["docs"][0]
+end
