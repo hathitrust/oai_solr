@@ -8,9 +8,31 @@ RSpec.describe "OAISolr" do
 
   let(:oai_endpoint) { "/oai" }
   # number of items in sample solr
-  let(:total_docs) { 2000 }
   let(:min_htid_update) { Date.parse(existing_record["ht_id_update"].min.to_s) }
   let(:max_htid_update) { Date.parse(existing_record["ht_id_update"].max.to_s) }
+  before(:all) { add_deleted_documents }
+
+  def deleted_document_date
+    solr_client.get("select", params: solr_params.merge(q: "deleted:true"))["response"]["docs"][0]["time_of_index"]
+  end
+
+  def add_deleted_documents
+    # Make sure we have at least N deleted documents in the index
+    s = solr_client
+    want_deleted_count = 10
+    deleted_count = s.get("select", params: solr_params.merge(q: "deleted:true"))["response"]["numFound"]
+    max_id = s.get("select", params: solr_params.merge(sort: "id desc"))["response"]["docs"][0]["id_int"]
+
+    (want_deleted_count - deleted_count).times do
+      s.add({
+        "id" => (max_id += 1).to_s,
+        "deleted" => true,
+        "time_of_index" => Time.now
+      })
+    end
+
+    s.commit
+  end
 
   def app
     Sinatra::Application
@@ -105,7 +127,15 @@ RSpec.describe "OAISolr" do
       expect(next_page_identifiers.to_set.intersection(page_identifiers)).to be_empty
     end
 
-    describe "date ranges" do
+    describe "date range query" do
+      it "can limit by until" do
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", until: min_htid_update.iso8601
+        doc = Nokogiri::XML::Document.parse(last_response.body)
+        token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
+        limited_list_size = token.attributes["completeListSize"].value
+        expect(limited_list_size.to_i).to be < total_docs
+      end
+
       it "can limit by from and until" do
         date = min_htid_update
         get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (date - 30).iso8601, until: (date + 7).iso8601
@@ -115,19 +145,38 @@ RSpec.describe "OAISolr" do
         expect(limited_list_size.to_i).to be < total_docs
       end
 
-      it "limiting by from with the max update date gives no results" do
-        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (max_htid_update + 1).iso8601
-        doc = Nokogiri::XML::Document.parse(last_response.body)
-        error = doc.xpath("//xmlns:error")[0]
-        expect(error.to_s).to match(/empty list/)
-      end
-
-      it "can limit by until" do
-        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", until: min_htid_update.iso8601
+      it "can limit by more granular timestamps" do
+        date = min_htid_update
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (date - 30).strftime("%FT%TZ"), until: (date + 7).strftime("%FT%TZ")
         doc = Nokogiri::XML::Document.parse(last_response.body)
         token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
         limited_list_size = token.attributes["completeListSize"].value
         expect(limited_list_size.to_i).to be < total_docs
+      end
+
+      # This is a vagary of the sample data, where all items indexed there have
+      # the same max update date, so we can't do a "from" limit and see
+      # anything between 0 and the full set
+      it "with from > max_update_date, gives no results" do
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (max_htid_update + 1).iso8601
+        doc = Nokogiri::XML::Document.parse(last_response.body)
+        error = doc.xpath("//xmlns:error")[0]
+        expect(error.attributes["code"].value).to eq("noRecordsMatch")
+      end
+
+      it "with until > from, gives no results" do
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (max_htid_update + 1).iso8601, until: (max_htid_update - 1).iso8601
+        doc = Nokogiri::XML::Document.parse(last_response.body)
+        error = doc.xpath("//xmlns:error")[0]
+        expect(error.attributes["code"].value).to eq("noRecordsMatch")
+      end
+
+      it "includes deleted records" do
+        del_date = deleted_document_date
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: del_date, until: del_date
+        doc = Nokogiri::XML::Document.parse(last_response.body)
+        deleted = doc.xpath("//xmlns:record/xmlns:header[@status='deleted']")
+        expect(deleted.count).to be > 0
       end
     end
 
@@ -172,7 +221,7 @@ RSpec.describe "OAISolr" do
 
     it "isn't duplicating records" do
       first_title = /<dc:title>(.*)<.dc:title>/.match(last_response.body)[1]
-      id = solr_client.get("select", params: {q: "*:*", wt: "ruby", rows: 2})["response"]["docs"][1]["id"]
+      id = solr_client.get("select", params: solr_params.merge(rows: 2))["response"]["docs"][1]["id"]
       get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: id
       second_title = /<dc:title>(.*)<.dc:title>/.match(last_response.body)[1]
       expect(first_title).to_not eq(second_title)

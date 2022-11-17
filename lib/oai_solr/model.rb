@@ -87,7 +87,8 @@ module OAISolr
     # @param [Hash] options
     def daterange_fq(opts)
       if opts[:from] && opts[:until]
-        "ht_id_update:[#{opts[:from].strftime("%Y%m%d")} TO #{opts[:until].strftime("%Y%m%d")}]"
+        "ht_id_update:[#{opts[:from].strftime("%Y%m%d")} TO #{opts[:until].strftime("%Y%m%d")}] \
+         OR (deleted:true AND time_of_index:[#{opts[:from].strftime("%FT%TZ")} TO #{opts[:until].strftime("%FT%TZ")}])"
       end
     end
 

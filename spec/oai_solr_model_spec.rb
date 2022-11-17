@@ -4,9 +4,6 @@ require "oai_solr/model"
 RSpec.describe OAISolr::Model do
   let(:model) { described_class.new }
 
-  # number of items in sample solr
-  let(:total_docs) { 2000 }
-
   describe "#earliest" do
     it "returns the earliest last modified record date available" do
       # We will just use beginning of the epoch because the point is a null limit
