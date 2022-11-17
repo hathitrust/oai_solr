@@ -36,7 +36,7 @@ module OAISolr
 
     def deleted?
       solr_value("deleted")
-    end 
+    end
 
     # Filter fields out of a record that don't return a truthy value from the block.
     # This is destructive on the record
