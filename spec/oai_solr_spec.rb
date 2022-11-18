@@ -157,8 +157,8 @@ RSpec.describe "OAISolr" do
       # This is a vagary of the sample data, where all items indexed there have
       # the same max update date, so we can't do a "from" limit and see
       # anything between 0 and the full set
-      it "with from > max_update_date, gives no results" do
-        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (max_htid_update + 1).iso8601
+      it "with from in the future, gives no results" do
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (Date.today + 1).iso8601
         doc = Nokogiri::XML::Document.parse(last_response.body)
         error = doc.xpath("//xmlns:error")[0]
         expect(error.attributes["code"].value).to eq("noRecordsMatch")
