@@ -35,21 +35,22 @@ module OAISolr
     private
 
     def find_all(opts)
-      (cursor_mark, opts) = restore_options(opts)
+      response = @client.get("select", params: params(opts))
 
-      params = {
-        q: "*:*",
-        wt: "ruby",
-        rows: Settings.page_size,
-        cursorMark: cursor_mark,
-        sort: "id asc"
-      }
-      set = OAISolr::Set.for_spec(opts[:set])
-      params[:fq] = set.filter_query if set.filter_query.any?
-      response = @client.get("select", params: params)
       partial_result = OAISolr::PartialResult.new_from_solr_response(response, opts)
       OAI::Provider::PartialResult.new(partial_result.records, partial_result.token)
+      # OAI::Provider::PartialResult.new(
+      #   response["response"]["docs"].map { |doc| OAISolr::Record.new(doc) },
+      #   resumption_token(opts, response)
+      # )
     end
+
+    def find_one(selector, opts)
+      response = @client.get "select", params: {q: "id:#{selector}", wt: "ruby"}
+      OAISolr::Record.new(response["response"]["docs"].first)
+    end
+
+    # TODO factor this all out somewhere else - SolrParams?
 
     # Returns the cursorMark to use for the solr query along with options as
     # parsed from a resumption token
@@ -62,9 +63,37 @@ module OAISolr
       end
     end
 
-    def find_one(selector, opts)
-      response = @client.get "select", params: {q: "id:#{selector}", wt: "ruby"}
-      OAISolr::Record.new(response["response"]["docs"].first)
+    # Build a hash of params to be request from Solr
+    # @param [Hash] options list including cursor_mark
+    def params(opts)
+      (cursor_mark, opts) = restore_options(opts)
+      params = {
+        q: "*:*",
+        wt: "ruby",
+        rows: Settings.page_size,
+        cursorMark: cursor_mark,
+        sort: "id asc"
+      }
+      params[:fq] = filter_query(opts) if filter_query(opts)
+      params
+    end
+
+    def filter_query(opts)
+      fq = [daterange_fq(opts), set_fq(opts)]
+      fq.join(" ") if fq.any?
+    end
+
+    # Get us a parameter string for "from" and "until" options
+    # @param [Hash] options
+    def daterange_fq(opts)
+      if opts[:from] && opts[:until]
+        "ht_id_update:[#{opts[:from].strftime("%Y%m%d")} TO #{opts[:until].strftime("%Y%m%d")}] \
+         OR (deleted:true AND time_of_index:[#{opts[:from].strftime("%FT%TZ")} TO #{opts[:until].strftime("%FT%TZ")}])"
+      end
+    end
+
+    def set_fq(opts)
+      OAISolr::Set.for_spec(opts[:set]).filter_query
     end
   end
 end
