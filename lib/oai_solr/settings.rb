@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "ettin"
-
+require "sinatra"
 module OAISolr
 end
 

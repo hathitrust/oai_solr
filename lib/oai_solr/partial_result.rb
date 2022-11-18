@@ -2,6 +2,7 @@
 
 require "oai_solr/record"
 require "oai_solr/set"
+require "nokogiri"
 
 module OAISolr
   class PartialResult
@@ -9,40 +10,32 @@ module OAISolr
       new(solr_response: response, opts: opts)
     end
 
+    # @param [Hash] solr_response Full response from the solr query (parsed from the JSON)
+    # @option opts [String] :set set key (as seen in settings.yml)
+    # @todo make a real options object?
     def initialize(solr_response:, opts:)
       @response = solr_response
       @opts = opts
       @set = OAISolr::Set.for_spec(opts[:set])
     end
 
+    # @return [Array<OAISolr::Record>] Records from the response that fit the set criteria,
+    #   possibly munged to remove some fields
     def records
-      @response["response"]["docs"].map { |doc| OAISolr::Record.new(prune_doc(doc)) }
+      @response["response"]["docs"]
+        .map { |doc| OAISolr::Record.new(doc) }
+        .map { |rec| @set.remove_unwanted_974s(rec) }
+        .select { |rec| @set.include_record?(rec) }
     end
 
+    # @return [OAI::Provider::ResumptionToken] The resumption token object with data pulled from
+    #   @opts and @response
     def token
       OAI::Provider::ResumptionToken.new(
         @opts.merge(last: @response["nextCursorMark"]),
         nil,
         @response["response"]["numFound"]
       )
-    end
-
-    private
-
-    # Remove 974 datafield for any HT volumes that do not belong in the set, if any.
-    # Note: this is a hack that modifies the SOLR record in place before passing it to
-    # OAISolr::Record. A better approach might be to alter the OAISolr::Record after it
-    # is created, in a way that doesn't require it to keep track of what set it is
-    # supposed to belong to, perhaps by telling it to jettison certain subfields.
-    def prune_doc(doc)
-      xpath = @set.exclusion_filter
-      return doc if xpath.nil?
-
-      xml = Nokogiri::XML::Document.parse(doc["fullrecord"])
-      nodes = xml.xpath(xpath)
-      nodes.each { |node| node.parent.remove }
-      doc["fullrecord"] = xml.to_xml
-      doc
     end
   end
 end

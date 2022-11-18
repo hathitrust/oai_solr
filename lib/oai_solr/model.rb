@@ -19,8 +19,9 @@ module OAISolr
       Time.now
     end
 
+    # @return [Array<OAISolr::Set>] List of sets derived from those listed in the settings file
     def sets
-      Settings.sets.map { |spec| OAISolr::Set.for_spec(spec.to_s) }
+      OAISolr::Set::VALID_SET_SPECS.map { |spec| OAISolr::Set.for_spec(spec.to_s) }
     end
 
     def find(selector, opts = {})
