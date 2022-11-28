@@ -80,16 +80,16 @@ module OAISolr
     end
 
     def filter_query(opts)
-      fq = [daterange_fq(opts), set_fq(opts)]
-      fq.join(" ") if fq.any?
+      daterange_fq(opts) + set_fq(opts)
     end
 
     # Get us a parameter string for "from" and "until" options
     # @param [Hash] options
     def daterange_fq(opts)
       if opts[:from] && opts[:until]
-        "ht_id_update:[#{opts[:from].strftime("%Y%m%d")} TO #{opts[:until].strftime("%Y%m%d")}] \
-         OR (deleted:true AND time_of_index:[#{opts[:from].strftime("%FT%TZ")} TO #{opts[:until].strftime("%FT%TZ")}])"
+        ["ht_id_update:[#{opts[:from].strftime("%Y%m%d")} TO #{opts[:until].strftime("%Y%m%d")}] OR (deleted:true AND time_of_index:[#{opts[:from].strftime("%FT%TZ")} TO #{opts[:until].strftime("%FT%TZ")}])"]
+      else
+        []
       end
     end
 
