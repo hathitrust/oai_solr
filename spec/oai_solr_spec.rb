@@ -115,16 +115,31 @@ RSpec.describe "OAISolr" do
       expect(token.attributes["completeListSize"].value).to match(/^\d+/)
     end
 
-    it "can fetch additional pages of N results" do
-      page_identifiers = doc.xpath("//xmlns:identifier").map(&:text)
-      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+    it "gets a valid ruby OAI token from first page" do
+      first_page_token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+      expect(first_page_token).to start_with("oai_dc")
+    end
 
-      get oai_endpoint, verb: "ListRecords", resumptionToken: token
+    it "gets a valid ruby OAI token from second page" do
+      first_page_token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+      get oai_endpoint, verb: "ListRecords", resumptionToken: first_page_token
       next_page_doc = Nokogiri::XML::Document.parse(last_response.body)
-      next_page_identifiers = next_page_doc.xpath("//xmlns:identifier").map(&:text)
+      next_page_token = next_page_doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
 
-      expect(next_page_identifiers.length).to eq(OAISolr::Settings.page_size)
-      expect(next_page_identifiers.to_set.intersection(page_identifiers)).to be_empty
+      expect(next_page_token).to start_with("oai_dc")
+    end
+
+    it "gives different results per page" do
+      _doc1, token1, ids1 = doc_token_ids(last_response.body)
+      get oai_endpoint, verb: "ListRecords", resumptionToken: token1
+      _doc2, token2, ids2 = doc_token_ids(last_response.body)
+      get oai_endpoint, verb: "ListRecords", resumptionToken: token2
+      _doc3, token3, ids3 = doc_token_ids(last_response.body)
+
+      total_ids = ids1.size + ids2.size + ids3.size
+      expect(total_ids).to eq(OAISolr::Settings.page_size * 3)
+      expect([token1, token2, token3].uniq.size).to eq(3)
+      expect([ids1, ids2, ids3].flatten.uniq.size).to eq(total_ids)
     end
 
     describe "date range query" do

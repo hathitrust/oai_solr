@@ -127,3 +127,10 @@ end
 def total_docs
   solr_client.get("select", params: solr_params)["response"]["numFound"]
 end
+
+def doc_token_ids(response_body)
+  doc = Nokogiri::XML::Document.parse(response_body)
+  token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+  ids = doc.xpath("//xmlns:identifier").map(&:text)
+  [doc, token, ids]
+end
