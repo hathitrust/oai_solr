@@ -127,6 +127,20 @@ RSpec.describe "OAISolr" do
       expect(next_page_identifiers.to_set.intersection(page_identifiers)).to be_empty
     end
 
+    it "gets a valid ruby OAI token from first page" do
+      first_page_token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+      expect(first_page_token).to start_with("oai_dc")
+    end
+
+    it "gets a valid ruby OAI token from second page" do
+      first_page_token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+      get oai_endpoint, verb: "ListRecords", resumptionToken: first_page_token
+      next_page_doc = Nokogiri::XML::Document.parse(last_response.body)
+      next_page_token = next_page_doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+
+      expect(next_page_token).to start_with("oai_dc")
+    end
+
     describe "date range query" do
       it "can limit by until" do
         get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", until: min_htid_update.iso8601
