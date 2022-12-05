@@ -37,13 +37,8 @@ module OAISolr
 
     def find_all(opts)
       response = @client.get("select", params: params(opts))
-
       partial_result = OAISolr::PartialResult.new_from_solr_response(response, opts)
       OAI::Provider::PartialResult.new(partial_result.records, partial_result.token)
-      # OAI::Provider::PartialResult.new(
-      #   response["response"]["docs"].map { |doc| OAISolr::Record.new(doc) },
-      #   resumption_token(opts, response)
-      # )
     end
 
     def find_one(selector, opts)
