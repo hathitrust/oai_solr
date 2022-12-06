@@ -13,6 +13,7 @@ module OAISolr
     attr_accessor :solr_document
 
     # @param [Hash] solr_document Hash representation of the solr document
+    # @param [OAISolr::Set] Set this document is part of, also used for pruning unneded ids
     def initialize(solr_document)
       @solr_document = solr_document
     end
