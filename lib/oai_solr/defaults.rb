@@ -2,7 +2,6 @@
 
 module OAISolr
   module Defaults
-
     def earliest
       Time.at(0)
     end
@@ -10,7 +9,6 @@ module OAISolr
     def latest
       Time.now
     end
-
 
     def default_token_params
       {
@@ -22,7 +20,7 @@ module OAISolr
     end
 
     def default_query_params
-      params = {
+      {
         q: "*:*",
         wt: "ruby",
         rows: Settings.page_size,
