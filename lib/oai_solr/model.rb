@@ -44,7 +44,7 @@ module OAISolr
     # @param [Hash] options list including cursor_mark
     def params(opts)
       token = OAISolr::ResumptionToken.from_options(opts)
-      params = default_query_params.merge(cursorMark: token.last_str)
+      params = default_solr_query_params.merge(cursorMark: token.last_str)
       params[:fq] = filter_query(token.to_conditions_hash)
       params
     end

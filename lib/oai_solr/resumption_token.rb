@@ -13,12 +13,13 @@ module OAISolr
     def self.from_existing_token(token, **opts)
       old_token = parse(token)
       expiration = opts[:expiration]
-      new_opts = old_token.to_conditions_hash.merge(last: old_token.last_str)
+      new_opts = old_token.to_conditions_hash.merge(last: old_token.last_str).merge(opts)
       new(new_opts, expiration, old_token.total)
     end
 
     # Detects and uses a token string if there's one in opts[:resumption_token],
     # otherwise just returns a new token based on the opts
+    # @return [OAISolr::ResumptionToken]
     def self.from_options(opts, expiration: nil, total: nil)
       if opts[:resumption_token]
         from_existing_token(opts[:resumption_token], **opts)
