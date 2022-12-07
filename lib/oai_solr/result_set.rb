@@ -6,7 +6,7 @@ require "oai_solr/resumption_token"
 require "nokogiri"
 
 module OAISolr
-  class PartialResult
+  class ResultSet
     def self.new_from_solr_response(response, opts)
       new(solr_response: response, opts: opts)
     end
@@ -29,14 +29,32 @@ module OAISolr
         .select { |rec| @set.include_record?(rec) }
     end
 
+    def total
+      @response["response"]["numFound"]
+    end
+
+    def is_partial?
+      total > Settings.page_size
+    end
+
     # Build a new OAISolr::ResumptionToken based on information from the existing
     # token (if any) and return it.
     # @return [OAISolr::ResumptionToken] The resumption token object with data pulled from
     #   @opts and @response
     def token
-      total = @response["response"]["numFound"]
-      opts = @opts.merge(last: @response["nextCursorMark"])
-      OAISolr::ResumptionToken.from_options(opts, total: total)
+      return unless is_partial?
+
+      if has_more_results?
+        opts = @opts.merge(last: @response["nextCursorMark"])
+        OAISolr::ResumptionToken.from_options(opts, total: total)
+      else
+        OAI::Provider::ResumptionToken.new(total: total)
+      end
+    end
+
+    def has_more_results?
+      @response["nextCursorMark"] != @response["responseHeader"]["cursorMark"] &&
+        @response["response"]["docs"].count == Settings.page_size
     end
   end
 end

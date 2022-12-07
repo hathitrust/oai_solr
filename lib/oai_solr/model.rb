@@ -3,7 +3,7 @@ require "marc/xmlreader"
 require "nokogiri"
 require "oai"
 require "rsolr"
-require "oai_solr/partial_result"
+require "oai_solr/result_set"
 require "oai_solr/record"
 require "oai_solr/set"
 require "oai_solr/defaults"
@@ -31,8 +31,13 @@ module OAISolr
 
     def find_all(opts)
       response = @client.get("select", params: params(opts))
-      partial_result = OAISolr::PartialResult.new_from_solr_response(response, opts)
-      OAI::Provider::PartialResult.new(partial_result.records, partial_result.token)
+      result = OAISolr::ResultSet.new_from_solr_response(response, opts)
+
+      if result.is_partial?
+        OAI::Provider::PartialResult.new(result.records, result.token)
+      else
+        result.records
+      end
     end
 
     def find_one(selector, opts)

@@ -105,41 +105,60 @@ RSpec.describe "OAISolr" do
       expect(doc.xpath("count(//xmlns:ListRecords/xmlns:record)")).to eq(OAISolr::Settings.page_size)
     end
 
-    it "provides resumption token" do
-      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
-      expect(token.text).not_to be(nil)
-    end
+    describe "resumption tokens" do
+      it "provides resumption token" do
+        token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
+        expect(token.text).not_to be(nil)
+      end
 
-    it "resumption token has complete list size" do
-      token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
-      expect(token.attributes["completeListSize"].value).to match(/^\d+/)
-    end
+      it "resumption token has complete list size" do
+        token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
+        expect(token.attributes["completeListSize"].value).to match(/^\d+/)
+      end
 
-    it "gets a valid ruby OAI token from first page" do
-      first_page_token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
-      expect(first_page_token).to start_with("oai_dc")
-    end
+      it "gets a valid ruby OAI token from first page" do
+        first_page_token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+        expect(first_page_token).to start_with("oai_dc")
+      end
 
-    it "gets a valid ruby OAI token from second page" do
-      first_page_token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
-      get oai_endpoint, verb: "ListRecords", resumptionToken: first_page_token
-      next_page_doc = Nokogiri::XML::Document.parse(last_response.body)
-      next_page_token = next_page_doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+      it "gets a valid ruby OAI token from second page" do
+        first_page_token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
+        get oai_endpoint, verb: "ListRecords", resumptionToken: first_page_token
 
-      expect(next_page_token).to start_with("oai_dc")
-    end
+        _doc, resumption_token, _ids = doc_token_ids(last_response.body)
+        expect(resumption_token).to start_with("oai_dc")
+      end
 
-    it "gives different results per page" do
-      _doc1, token1, ids1 = doc_token_ids(last_response.body)
-      get oai_endpoint, verb: "ListRecords", resumptionToken: token1
-      _doc2, token2, ids2 = doc_token_ids(last_response.body)
-      get oai_endpoint, verb: "ListRecords", resumptionToken: token2
-      _doc3, token3, ids3 = doc_token_ids(last_response.body)
+      it "gives different results per page" do
+        _doc1, token1, ids1 = doc_token_ids(last_response.body)
+        get oai_endpoint, verb: "ListRecords", resumptionToken: token1
+        _doc2, token2, ids2 = doc_token_ids(last_response.body)
+        get oai_endpoint, verb: "ListRecords", resumptionToken: token2
+        _doc3, token3, ids3 = doc_token_ids(last_response.body)
 
-      total_ids = ids1.size + ids2.size + ids3.size
-      expect(total_ids).to eq(OAISolr::Settings.page_size * 3)
-      expect([token1, token2, token3].uniq.size).to eq(3)
-      expect([ids1, ids2, ids3].flatten.uniq.size).to eq(total_ids)
+        total_ids = ids1.size + ids2.size + ids3.size
+        expect(total_ids).to eq(OAISolr::Settings.page_size * 3)
+        expect([token1, token2, token3].uniq.size).to eq(3)
+        expect([ids1, ids2, ids3].flatten.uniq.size).to eq(total_ids)
+      end
+
+      it "single page of results has no resumptionToken element" do
+        # should have only one record in sample set
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: "2013-08-01", until: "2013-08-01"
+
+        doc = Nokogiri::XML::Document.parse(last_response.body)
+        expect(doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")).to be_empty
+      end
+
+      # http://www.openarchives.org/OAI/openarchivesprotocol.html#FlowControl
+      # "the response containing the incomplete list that completes the list must include an empty resumptionToken element;"
+      it "last page includes empty resumptionToken" do
+        get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: "2013-08-10", until: "2013-08-10"
+        _doc1, token1, _ids1 = doc_token_ids(last_response.body)
+        get oai_endpoint, verb: "ListRecords", resumptionToken: token1
+        _doc2, token2, _ids2 = doc_token_ids(last_response.body)
+        expect(token2).to eq("")
+      end
     end
 
     describe "date range query" do
