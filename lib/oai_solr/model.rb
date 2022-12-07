@@ -1,3 +1,4 @@
+require "date"
 require "marc"
 require "marc/xmlreader"
 require "nokogiri"
@@ -12,7 +13,7 @@ module OAISolr
     include OAI::Provider
 
     def earliest
-      Time.at(0)
+      Date.parse(Settings.earliest).to_time || Time.at(0)
     end
 
     def latest
