@@ -22,8 +22,7 @@ module OAISolr
       {
         from: earliest,
         until: latest,
-        prefix: "oai_dc",
-        last: "*"
+        prefix: "oai_dc"
       }
     end
 

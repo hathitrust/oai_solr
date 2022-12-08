@@ -2,22 +2,25 @@
 
 require "oai_solr/record"
 require "oai_solr/set"
-require "oai_solr/resumption_token"
+require "oai_solr/params"
 require "nokogiri"
 
+# Handles results from Solr and transforms them into output records for
+# OAI.
 module OAISolr
   class ResultSet
-    def self.new_from_solr_response(response, opts)
-      new(solr_response: response, opts: opts)
+    attr_reader :params
+
+    def self.new_from_solr_response(response, oai_params)
+      new(solr_response: response, oai_params: oai_params)
     end
 
     # @param [Hash] solr_response Full response from the solr query (parsed from the JSON)
-    # @option opts [String] :set set key (as seen in settings.yml)
-    # @todo make a real options object?
-    def initialize(solr_response:, opts:)
+    # @option opts [OAISolr::Params] options parsed from this request
+    def initialize(solr_response:, oai_params:)
       @response = solr_response
-      @opts = opts
-      @set = OAISolr::Set.for_spec(opts[:set])
+      @params = oai_params
+      @set = OAISolr::Set.for_spec(params[:set])
     end
 
     # @return [Array<OAISolr::Record>] Records from the response that fit the set criteria,
@@ -37,24 +40,17 @@ module OAISolr
       total > Settings.page_size
     end
 
-    # Build a new OAISolr::ResumptionToken based on information from the existing
+    # Build a new OAI::Provider::ResumptionToken based on information from the existing
     # token (if any) and return it.
-    # @return [OAISolr::ResumptionToken] The resumption token object with data pulled from
-    #   @opts and @response
+    #
+    # @return [OAI::Provider::ResumptionToken] The resumption token object with data
+    # pulled from @params and @response
     def token
       return unless is_partial?
 
-      if has_more_results?
-        opts = @opts.merge(last: @response["nextCursorMark"])
-        OAISolr::ResumptionToken.from_options(opts, total: total)
-      else
-        OAI::Provider::ResumptionToken.new(total: total)
-      end
-    end
-
-    def has_more_results?
-      @response["nextCursorMark"] != @response["responseHeader"]["cursorMark"] &&
-        @response["response"]["docs"].count == Settings.page_size
+      params.next_token(total: total,
+        next_mark: @response["nextCursorMark"],
+        page_results: @response["response"]["docs"].count)
     end
   end
 end
