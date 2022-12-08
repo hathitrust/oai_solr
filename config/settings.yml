@@ -5,6 +5,8 @@ record_prefix: "oai:localhost.default.invalid"
 admin_email: "admin@default.invalid"
 page_size: 10
 handle: "http://hdl.handle.net/2027/"
+earliest: "2013-08-01"
+sample_identifier: "012348511"
 sets:
   "hathitrust:pd" :
     name: "Public domain and open access works viewable worldwide"
