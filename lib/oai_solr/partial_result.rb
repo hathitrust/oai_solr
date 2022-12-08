@@ -2,6 +2,7 @@
 
 require "oai_solr/record"
 require "oai_solr/set"
+require "oai_solr/resumption_token"
 require "nokogiri"
 
 module OAISolr
@@ -28,14 +29,14 @@ module OAISolr
         .select { |rec| @set.include_record?(rec) }
     end
 
-    # @return [OAI::Provider::ResumptionToken] The resumption token object with data pulled from
+    # Build a new OAISolr::ResumptionToken based on information from the existing
+    # token (if any) and return it.
+    # @return [OAISolr::ResumptionToken] The resumption token object with data pulled from
     #   @opts and @response
     def token
-      OAI::Provider::ResumptionToken.new(
-        @opts.merge(last: @response["nextCursorMark"]),
-        nil,
-        @response["response"]["numFound"]
-      )
+      total = @response["response"]["numFound"]
+      opts = @opts.merge(last: @response["nextCursorMark"])
+      OAISolr::ResumptionToken.from_options(opts, total: total)
     end
   end
 end

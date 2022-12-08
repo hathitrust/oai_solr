@@ -7,18 +7,12 @@ require "rsolr"
 require "oai_solr/partial_result"
 require "oai_solr/record"
 require "oai_solr/set"
+require "oai_solr/defaults"
 
 module OAISolr
   class Model < OAI::Provider::Model
     include OAI::Provider
-
-    def earliest
-      Date.parse(Settings.earliest).to_time || Time.at(0)
-    end
-
-    def latest
-      Time.now
-    end
+    include OAISolr::Defaults
 
     # @return [Array<OAISolr::Set>] List of sets derived from those listed in the settings file
     def sets
@@ -38,13 +32,8 @@ module OAISolr
 
     def find_all(opts)
       response = @client.get("select", params: params(opts))
-
       partial_result = OAISolr::PartialResult.new_from_solr_response(response, opts)
       OAI::Provider::PartialResult.new(partial_result.records, partial_result.token)
-      # OAI::Provider::PartialResult.new(
-      #   response["response"]["docs"].map { |doc| OAISolr::Record.new(doc) },
-      #   resumption_token(opts, response)
-      # )
     end
 
     def find_one(selector, opts)
@@ -52,31 +41,12 @@ module OAISolr
       OAISolr::Record.new(response["response"]["docs"].first)
     end
 
-    # TODO factor this all out somewhere else - SolrParams?
-
-    # Returns the cursorMark to use for the solr query along with options as
-    # parsed from a resumption token
-    def restore_options(opts)
-      if opts[:resumption_token]
-        token = OAI::Provider::ResumptionToken.parse(opts[:resumption_token])
-        [token.last_str, token.to_conditions_hash]
-      else
-        ["*", opts]
-      end
-    end
-
     # Build a hash of params to be request from Solr
     # @param [Hash] options list including cursor_mark
     def params(opts)
-      (cursor_mark, opts) = restore_options(opts)
-      params = {
-        q: "*:*",
-        wt: "ruby",
-        rows: Settings.page_size,
-        cursorMark: cursor_mark,
-        sort: "id asc"
-      }
-      params[:fq] = filter_query(opts) if filter_query(opts)
+      token = OAISolr::ResumptionToken.from_options(opts)
+      params = default_solr_query_params.merge(cursorMark: token.last_str)
+      params[:fq] = filter_query(token.to_conditions_hash)
       params
     end
 
