@@ -12,5 +12,7 @@ module OAISolr
     source_model OAISolr::Model.new
     register_format OAISolr::Marc21.new
     register_format OAISolr::DublinCore.instance
+    sample_id Settings.sample_identifier
+    update_granularity OAI::Const::Granularity::LOW
   end
 end

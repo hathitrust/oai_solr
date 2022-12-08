@@ -1,4 +1,5 @@
 require "oai"
+require "rights_database"
 
 module OAISolr
   class DublinCore < OAI::Provider::Metadata::DublinCore
@@ -18,6 +19,18 @@ module OAISolr
       xml.target!
     end
 
+    def self.rights_statement(record, statements = access_statements(record))
+      template = <<~RIGHTS_STATEMENT_TEMPLATE
+        Items in this record are available %{head_statement}.
+        View the access and use profile %{url_statement}.
+        Please see individual items for rights and use statements.
+      RIGHTS_STATEMENT_TEMPLATE
+      head_statement = conjunctionalize statements.map { |statement| "as #{statement.head}" }
+      url_statement = conjunctionalize statements.map { |statement| "at #{statement.url}" }
+      statement = template % {head_statement: head_statement, url_statement: url_statement}
+      statement.gsub!(/[[:space:]]+/, " ").strip!
+    end
+
     private
 
     def dublin_core_hash(record)
@@ -28,7 +41,7 @@ module OAISolr
         dc["type"] = "text"
         dc["date"] = record.solr_document["display_date"]
         dc["description"] = description(record)
-        dc["rights"] = rights_statement
+        dc["rights"] = self.class.rights_statement(record)
 
         %w[publisher language format]
           .reject { |k| record.solr_document[k].nil? }
@@ -48,10 +61,25 @@ module OAISolr
       record.marc_record["300"].subfields.select { |sub| %w[a b c].include? sub.code }.map { |sub| sub.value }.join(" ")
     end
 
-    # TODO: I don't know how this is being generated currently and for records with multiple
-    # items it doesn't make much sense.
-    def rights_statement
-      "a rights statement"
+    # Returns an array of unique access statements for each HTID on record
+    # If the query has an associated set, exclude any item with rights not
+    # covered by the set.
+    private_class_method def self.access_statements(record)
+      statements = ::Set.new
+      record.marc_record.fields("974").each do |field|
+        rights = RightsDatabase::Rights.new(item_id: field["u"])
+        statements.add RightsDatabase.access_statements_map.for(rights: rights)
+      end
+      statements.to_a.sort_by(&:head)
+    end
+
+    # Utility method for rights_statement.
+    # Turns ["public domain", "in-copyright", "something"] into
+    # "public domain, in-copyright, and something"
+    private_class_method def self.conjunctionalize(array = nil)
+      return "" if array.nil? || array.length.zero?
+      return array.join(" and ") if array.length <= 2
+      array[0..-2].join(", ") + ", and " + array[-1]
     end
   end
 end

@@ -11,6 +11,7 @@ gem "marc", "~> 1.2"
 gem "rsolr"
 gem "ettin"
 gem "nokogiri"
+gem "rights_database", github: "hathitrust/rights_database"
 
 group :development, :test do
   gem "pry"
