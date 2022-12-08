@@ -83,8 +83,8 @@ RSpec.describe OAISolr::Record do
       expect(parsed.css("dc|identifier").map { |c| c.text }).to include(handle)
     end
 
-    xit "has dc:rights" do
-      expect(parsed.css("dc|rights").text).to eq("a rights statement")
+    it "has dc:rights" do
+      expect(parsed.css("dc|rights").text).to match(/^Items in this record/)
     end
   end
 end

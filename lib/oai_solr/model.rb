@@ -1,3 +1,4 @@
+require "date"
 require "marc"
 require "marc/xmlreader"
 require "nokogiri"

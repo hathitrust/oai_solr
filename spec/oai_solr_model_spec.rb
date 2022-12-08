@@ -6,8 +6,7 @@ RSpec.describe OAISolr::Model do
 
   describe "#earliest" do
     it "returns the earliest last modified record date available" do
-      # We will just use beginning of the epoch because the point is a null limit
-      expect(described_class.new.earliest).to eq(Time.at(0))
+      expect(described_class.new.earliest).to (be > Time.at(0)) & (be < Time.now)
     end
   end
 
