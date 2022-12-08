@@ -7,7 +7,7 @@ module OAISolr
     # Earliest timestamp from which we'll provide data
     # @return [Time]
     def earliest
-      Time.at(0)
+      Date.parse(Settings.earliest).to_time || Time.at(0)
     end
 
     # Latest timestamp for which we'll provide data
