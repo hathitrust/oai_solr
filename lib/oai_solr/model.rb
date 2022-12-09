@@ -4,11 +4,12 @@ require "marc/xmlreader"
 require "nokogiri"
 require "oai"
 require "rsolr"
-require "oai_solr/partial_result"
+require "oai_solr/result_set"
 require "oai_solr/record"
 require "oai_solr/set"
 require "oai_solr/defaults"
 
+# Queries Solr for results matching the given criteria
 module OAISolr
   class Model < OAI::Provider::Model
     include OAI::Provider
@@ -31,9 +32,15 @@ module OAISolr
     private
 
     def find_all(opts)
-      response = @client.get("select", params: params(opts))
-      partial_result = OAISolr::PartialResult.new_from_solr_response(response, opts)
-      OAI::Provider::PartialResult.new(partial_result.records, partial_result.token)
+      oai_params = OAISolr::Params.new(opts)
+      response = @client.get("select", params: solr_params(oai_params))
+      result = OAISolr::ResultSet.new_from_solr_response(response, oai_params)
+
+      if result.is_partial?
+        OAI::Provider::PartialResult.new(result.records, result.token)
+      else
+        result.records
+      end
     end
 
     def find_one(selector, opts)
@@ -42,12 +49,11 @@ module OAISolr
     end
 
     # Build a hash of params to be request from Solr
-    # @param [Hash] options list including cursor_mark
-    def params(opts)
-      token = OAISolr::ResumptionToken.from_options(opts)
-      params = default_solr_query_params.merge(cursorMark: token.last_str)
-      params[:fq] = filter_query(token.to_conditions_hash)
-      params
+    # @param [OAISolr::Params] options parsed from incoming request
+    def solr_params(oai_params)
+      solr_params = default_solr_query_params.merge(cursorMark: oai_params.cursor_mark)
+      solr_params[:fq] = filter_query(oai_params)
+      solr_params
     end
 
     def filter_query(opts)
@@ -55,7 +61,7 @@ module OAISolr
     end
 
     # Get us a parameter string for "from" and "until" options
-    # @param [Hash] options
+    # @param [OAISolr::Params] options
     def daterange_fq(opts)
       if opts[:from] && opts[:until]
         ["ht_id_update:[#{opts[:from].strftime("%Y%m%d")} TO #{opts[:until].strftime("%Y%m%d")}] OR (deleted:true AND time_of_index:[#{opts[:from].strftime("%FT%TZ")} TO #{opts[:until].strftime("%FT%TZ")}])"]
