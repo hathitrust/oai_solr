@@ -10,10 +10,10 @@ def handle_oai
   OAISolr::Provider.new.process_request(params.to_h)
 end
 
-post "/oai" do
+post "/" do
   handle_oai
 end
 
-get "/oai" do
+get "/" do
   handle_oai
 end

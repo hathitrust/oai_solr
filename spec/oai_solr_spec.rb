@@ -6,7 +6,7 @@ require "set"
 RSpec.describe "OAISolr" do
   include Rack::Test::Methods
 
-  let(:oai_endpoint) { "/oai" }
+  let(:oai_endpoint) { "/" }
   # number of items in sample solr
   let(:min_htid_update) { Date.parse(existing_record["ht_id_update"].min.to_s) }
   let(:max_htid_update) { Date.parse(existing_record["ht_id_update"].max.to_s) }
