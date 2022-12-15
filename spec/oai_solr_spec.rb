@@ -116,6 +116,11 @@ RSpec.describe "OAISolr" do
         expect(token.attributes["completeListSize"].value).to match(/^\d+/)
       end
 
+      it "when given a bad solr cursorMark, gives an oai bad resumption token error" do
+        get oai_endpoint, verb: "ListRecords", resumptionToken: "marc21.s(hathitrust:pdus).f(2013-08-01T00:00:00Z).u(2022-12-15T17:27:25Z):500-1000-nonsense"
+        expect(doc.xpath("count(//xmlns:error[@code='badResumptionToken'])")).to eq(1)
+      end
+
       it "gets a valid ruby OAI token from first page" do
         first_page_token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0].text
         expect(first_page_token).to start_with("oai_dc")
@@ -215,7 +220,7 @@ RSpec.describe "OAISolr" do
     end
 
     it "can get the complete result set"
-    it "gets a useful error with invalid resumption token"
+
     it_behaves_like "valid oai response"
   end
 

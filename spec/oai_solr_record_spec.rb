@@ -30,13 +30,6 @@ RSpec.describe OAISolr::Record do
     let(:sdoc) { JSON.parse(File.read("spec/data/000007599.json")) }
     let(:rec) { described_class.new(sdoc) }
     let(:parsed) { Nokogiri::XML::Document.parse(rec.to_oai_dc) }
-    let(:oai_dc_schema) do
-      Nokogiri::XML::Schema(File.open(File.dirname(__FILE__) + "/schemas/oai_dc.xsd"))
-    end
-
-    xit "provides valid dublin core" do
-      expect(oai_dc_schema.valid?(parsed)).to be true
-    end
 
     it "has dc:title" do
       expect(parsed.css("dc|title").text).to eq("Wildlife management")
