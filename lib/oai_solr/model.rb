@@ -21,7 +21,6 @@ module OAISolr
     end
 
     def find(selector, opts = {})
-      @client = RSolr.connect url: ENV.fetch("SOLR_URL", "http://localhost:9033/solr/catalog")
       if selector == :all
         find_all(opts)
       else
@@ -31,9 +30,13 @@ module OAISolr
 
     private
 
+    def solr
+      @solr ||= RSolr.connect url: ENV.fetch("SOLR_URL", "http://localhost:9033/solr/catalog")
+    end
+
     def find_all(opts)
       oai_params = OAISolr::Params.new(opts)
-      response = @client.get("select", params: solr_params(oai_params))
+      response = solr_select(solr_params(oai_params))
       result = OAISolr::ResultSet.new_from_solr_response(response, oai_params)
 
       if result.is_partial?
@@ -44,7 +47,7 @@ module OAISolr
     end
 
     def find_one(selector, opts)
-      response = @client.get "select", params: {q: "id:#{selector}", wt: "ruby"}
+      response = solr_select({q: "id:#{selector}"})
       OAISolr::Record.new(response["response"]["docs"].first)
     end
 
@@ -72,6 +75,25 @@ module OAISolr
 
     def set_fq(opts)
       OAISolr::Set.for_spec(opts[:set]).filter_query
+    end
+
+    def solr_select(params)
+      solr.get("select", params: params)
+    rescue RSolr::Error::Http => e
+      check_cursor_mark_error(e) or raise e
+    end
+
+    # Checks if a Solr error comes from a bad cursor mark; if so, raise that as
+    # a ResumptionTokenException. Otherwise, returns false.
+
+    def check_cursor_mark_error(e)
+      return unless e.response[:status] == 400
+
+      e.response.delete(:request)
+      result = solr.adapt_response(e.request, e.response)
+      return unless /Unable to parse 'cursorMark'/.match?(result["error"]["msg"])
+
+      raise OAI::ResumptionTokenException.new(result["error"]["msg"])
     end
   end
 end

@@ -56,20 +56,38 @@ RSpec.describe OAISolr::ResultSet do
       end
     end
 
-    context "with numFound > doc count" do
-      # simulated second page of results
+    # token format: results_so_far-total_results-solr_cursor_mark
+
+    context "with last page of results != page size" do
+      # simulated second page of results; 11 total; 10 already served
       let(:response) { make_response(doc_count: 1, num_found: 11) }
 
       it "returns empty resumption token" do
-        expect(model(last: "10-old_token").token.to_s).to eq("")
+        expect(model(last: "10-11-old_token").token.to_s).to eq("")
       end
     end
 
     context "with last page of results = page size" do
-      # simulated second page of results
-      let(:response) { make_response(doc_count: 10, num_found: 20) }
+      # simulated last page of results
+      let(:response) { make_response(doc_count: 10, num_found: 30) }
       it "returns empty resumption token" do
-        expect(model(last: "10-old_token").token.to_s).to eq("")
+        expect(model(last: "20-30-old_token").token.to_s).to eq("")
+      end
+    end
+
+    context "with in-between page of results" do
+      # simulated second page - 10 so far, 10 on this page, 10 more to go
+      let(:response) { make_response(doc_count: 10, num_found: 30) }
+      it "returns resumption token" do
+        expect(model(last: "10-30-old_token").token.to_s).to match(/:20-30-next_mark/)
+      end
+    end
+
+    context "when numResults changes from page to page" do
+      # simulated results with 31 total results
+      let(:response) { make_response(doc_count: 10, num_found: 31) }
+      it "raises OAI::ResumptionTokenException" do
+        expect { model(last: "10-30-old_token").token }.to raise_exception(OAI::ResumptionTokenException)
       end
     end
   end

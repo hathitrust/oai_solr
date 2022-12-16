@@ -30,10 +30,14 @@ module OAISolr
     # use to get the next page of results, or an empty token if this is
     # the last page.
     def next_token(next_mark:, page_results:, total:, expiration: nil)
+      if old_total && total != old_total
+        raise OAI::ResumptionTokenException.new("result set changed size")
+      end
+
       new_results_so_far = results_so_far + page_results
 
       last = if new_results_so_far < total && next_mark != cursor_mark
-        new_results_so_far.to_s + "-" + next_mark
+        [new_results_so_far, total, next_mark].join("-")
       else
         ""
       end
@@ -45,11 +49,13 @@ module OAISolr
 
     def from_opts(opts)
       @old_token = OAI::Provider::ResumptionToken.parse(opts[:resumption_token])
-      (results_so_far_str, @cursor_mark) = old_token.last_str.split("-", 2)
+      (results_so_far_str, total_results_str, @cursor_mark) = old_token.last_str.split("-", 3)
+      raise OAI::ResumptionTokenException unless results_so_far_str && total_results_str && @cursor_mark
       @results_so_far = results_so_far_str.to_i
+      @old_total = total_results_str.to_i
       @opts = old_token.to_conditions_hash.merge(opts)
     end
 
-    attr_reader :old_token, :results_so_far, :opts
+    attr_reader :old_token, :results_so_far, :old_total, :opts
   end
 end

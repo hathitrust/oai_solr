@@ -50,5 +50,13 @@ RSpec.describe OAISolr::Model do
     it "interprets from as >= and to as <=" do
       expect(described_class.new.find(:all, {from: Date.parse("2021-09-25"), until: Date.parse("2021-09-25")}).records.map { |r| r.solr_document["ht_id_update"] }).to all(include(eq 20210925))
     end
+
+    it "raises OAI::ResumptionTokenException when given a bad resumption token" do
+      expect { described_class.new.find(:all, {resumption_token: "nonsense"}) }.to raise_error(OAI::ResumptionTokenException)
+    end
+
+    it "raises OAI::ResumptionTokenException when given a bad 'last' part of resumption token" do
+      expect { described_class.new.find(:all, {resumption_token: "marc21.f(2013-08-01T00:00:00Z).u(#{Date.today}T00:00:00Z):nonsense"}) }.to raise_error(OAI::ResumptionTokenException)
+    end
   end
 end
