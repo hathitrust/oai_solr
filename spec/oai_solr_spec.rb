@@ -164,6 +164,12 @@ RSpec.describe "OAISolr" do
         _doc2, token2, _ids2 = doc_token_ids(last_response.body)
         expect(token2).to eq("")
       end
+
+      it "when given a bad set, gives an oai noRecordsMatch error" do
+        get oai_endpoint, verb: "ListRecords", set: "hathitrust:nonexistent", metadataPrefix: "marc21"
+        expect(doc.xpath("count(//xmlns:error[@code='noRecordsMatch'])")).to eq(1)
+      end
+
     end
 
     describe "date range query" do

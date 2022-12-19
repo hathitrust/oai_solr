@@ -36,8 +36,15 @@ module OAISolr
 
     def find_all(opts)
       oai_params = OAISolr::Params.new(opts)
-      response = solr_select(solr_params(oai_params))
-      result = OAISolr::ResultSet.new_from_solr_response(response, oai_params)
+
+      begin
+        response = solr_select(solr_params(oai_params))
+        result = OAISolr::ResultSet.new_from_solr_response(response, oai_params)
+      rescue NonexistentSetError
+        # set not configured; suggested behavior is to return an empty set.
+        # Behavior not defined in the OAI spec.
+        return []
+      end
 
       if result.is_partial?
         OAI::Provider::PartialResult.new(result.records, result.token)

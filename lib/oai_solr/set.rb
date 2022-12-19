@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module OAISolr
+  class NonexistentSetError < RuntimeError ; end
+
   # A Set is an unrestricted (i.e., no filtering) specification for
   # a group of records. It holds logic to both change a record
   # to fit the specification (e.g., remove all non-open holdings)
@@ -54,7 +56,7 @@ module OAISolr
     # @param [String] set_spec The key of the spec in the settings
     # @raise [ArgumentError] if the set_spec isn't found in the settings
     def initialize(set_spec)
-      raise ArgumentError.new("Unknown set #{set_spec} not in #{VALID_SET_SPECS.join(", ")}") unless VALID_SET_SPECS.include? set_spec
+      raise NonexistentSetError.new("Unknown set #{set_spec} not in #{VALID_SET_SPECS.join(", ")}") unless VALID_SET_SPECS.include? set_spec
       config = Settings.sets[set_spec]
       @spec = set_spec
       @name = config["name"]
