@@ -55,7 +55,10 @@ module OAISolr
 
     def find_one(selector, opts)
       response = solr_select({q: "id:#{selector}"})
-      OAISolr::Record.new(response["response"]["docs"].first)
+
+      doc = response["response"]["docs"].first
+      raise OAI::IdException unless doc
+      OAISolr::Record.new(doc)
     end
 
     # Build a hash of params to be request from Solr
