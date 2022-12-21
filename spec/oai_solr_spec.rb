@@ -26,7 +26,7 @@ RSpec.describe "OAISolr" do
 
     (want_deleted_count - deleted_count).times do
       s.add({
-        "id" => sprintf("%09d",(min_id -= 1)),
+        "id" => sprintf("%09d", (min_id -= 1)),
         "deleted" => true,
         "time_of_index" => Time.now
       })
@@ -169,7 +169,6 @@ RSpec.describe "OAISolr" do
         get oai_endpoint, verb: "ListRecords", set: "hathitrust:nonexistent", metadataPrefix: "marc21"
         expect(doc.xpath("count(//xmlns:error[@code='noRecordsMatch'])")).to eq(1)
       end
-
     end
 
     describe "date range query" do
@@ -286,11 +285,9 @@ RSpec.describe "OAISolr" do
       record = MARC::XMLReader.new(StringIO.new(last_response.body)).first
       expect(record.leader).to match(/[\dA-Za-z ]{23}/)
     end
-
   end
 
   describe "GetRecord with nonexistent identifier" do
-
     it "returns oai idDoesNotExist error" do
       get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "nonexistent"
       error = doc.xpath("//xmlns:error")[0]

@@ -15,6 +15,10 @@ RSpec.describe OAISolr::Record do
     it "can get updated_at" do
       expect(rec.updated_at).to respond_to(:utc)
     end
+
+    it "returns the hathitrust set" do
+      expect(rec.sets.map(&:spec)).to contain_exactly("hathitrust")
+    end
   end
 
   context "with a record with no 300 field" do
@@ -23,6 +27,10 @@ RSpec.describe OAISolr::Record do
 
     it "can get oai_dc" do
       expect(rec.to_oai_dc).not_to be nil
+    end
+
+    it "returns appropriate sets for a pdus item" do
+      expect(rec.sets.map(&:spec)).to contain_exactly("hathitrust", "hathitrust:pdus")
     end
   end
 
