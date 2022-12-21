@@ -65,12 +65,13 @@ module OAISolr
     end
 
     def remove_unwanted_974s(r)
+      return r if r.deleted?
       r.remove_fields! { |f| f.tag == "974" and excluded_rights_codes.include?(f["r"]) }
       r
     end
 
     def include_record?(r)
-      !r.marc_record["974"].nil?
+      r.deleted? || !r.marc_record["974"].nil?
     end
   end
 end

@@ -20,13 +20,13 @@ RSpec.describe "OAISolr" do
   def add_deleted_documents
     # Make sure we have at least N deleted documents in the index
     s = solr_client
-    want_deleted_count = 10
+    want_deleted_count = 5
     deleted_count = s.get("select", params: solr_params.merge(q: "deleted:true"))["response"]["numFound"]
-    max_id = s.get("select", params: solr_params.merge(sort: "id desc"))["response"]["docs"][0]["id_int"]
+    min_id = s.get("select", params: solr_params.merge(sort: "id asc"))["response"]["docs"][0]["id_int"]
 
     (want_deleted_count - deleted_count).times do
       s.add({
-        "id" => (max_id += 1).to_s,
+        "id" => sprintf("%09d",(min_id -= 1)),
         "deleted" => true,
         "time_of_index" => Time.now
       })
