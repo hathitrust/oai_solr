@@ -1,6 +1,7 @@
 require "json"
 require "nokogiri"
 require "rights_database"
+require "oai_solr/services"
 
 RSpec.describe OAISolr::DublinCore do
   let(:rec) { OAISolr::Record.new(sdoc) }
@@ -39,6 +40,7 @@ RSpec.describe OAISolr::DublinCore do
 
   describe "#rights_statement" do
     let(:sdoc) { JSON.parse(File.read("spec/data/minimal.json")) }
+    let(:access_statements) { OAISolr::Services.rights_database.access_statements }
 
     context "with one statement" do
       correct_statement = <<~STATEMENT.tr("\n", " ").strip
@@ -47,7 +49,7 @@ RSpec.describe OAISolr::DublinCore do
         Please see individual items for rights and use statements.
       STATEMENT
       it "generates a correct rights statement" do
-        statements = [RightsDatabase.access_statements["pd"]]
+        statements = [access_statements["pd"]]
         expect(OAISolr::DublinCore.rights_statement(rec, statements)).to eq(correct_statement)
       end
     end
@@ -60,8 +62,8 @@ RSpec.describe OAISolr::DublinCore do
           and at http://www.hathitrust.org/access_use#cc-by.
           Please see individual items for rights and use statements.
         STATEMENT
-        statements = [RightsDatabase.access_statements["pd"],
-          RightsDatabase.access_statements["cc-by"]]
+        statements = [access_statements["pd"],
+          access_statements["cc-by"]]
         expect(OAISolr::DublinCore.rights_statement(rec, statements)).to eq(correct_statement)
       end
     end
