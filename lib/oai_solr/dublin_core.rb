@@ -67,10 +67,17 @@ module OAISolr
     private_class_method def self.access_statements(record)
       statements = ::Set.new
       record.marc_record.fields("974").each do |field|
-        rights = RightsDatabase::Rights.new(item_id: field["u"])
-        statements.add RightsDatabase.access_statements_map.for(rights: rights)
+        rights_attr = field["r"]
+        access_profile = access_profile(field["c"], field["s"])
+
+        statements.add Services.rights_database.access_statements_map.map[[rights_attr, access_profile]]
       end
       statements.to_a.sort_by(&:head)
+    end
+
+    private_class_method def self.access_profile(collection, digitizer)
+      access_profile_code = Services.access_profiles[[collection, digitizer]]
+      Services.rights_database.access_profiles[access_profile_code].name
     end
 
     # Utility method for rights_statement.

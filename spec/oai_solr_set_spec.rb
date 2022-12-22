@@ -72,5 +72,19 @@ RSpec.describe OAISolr::Set do
         expect(set.excluded_rights_codes).not_to include("pdus")
       end
     end
+
+    describe "RestrictedSet with hathitrust" do
+      let(:set) { OAISolr::Set.for_spec "hathitrust" }
+      it_behaves_like "a valid RestrictedSet"
+
+      it "has the same spec it was created with" do
+        expect(set.spec).to eq("hathitrust")
+      end
+
+      it "has a set of restricted rights codes" do
+        expect(set.excluded_rights_codes.count).to be > 0
+        expect(set.excluded_rights_codes).not_to include("ic")
+      end
+    end
   end
 end

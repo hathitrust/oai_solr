@@ -11,6 +11,7 @@ RSpec.describe "OAISolr" do
   let(:min_htid_update) { Date.parse(existing_record["ht_id_update"].min.to_s) }
   let(:max_htid_update) { Date.parse(existing_record["ht_id_update"].max.to_s) }
   before(:all) { add_deleted_documents }
+  let(:ns_map) { {"marc" => "http://www.loc.gov/MARC21/slim"} }
 
   def deleted_document_date
     solr_client.get("select", params: solr_params.merge(q: "deleted:true"))["response"]["docs"][0]["time_of_index"]
@@ -19,13 +20,13 @@ RSpec.describe "OAISolr" do
   def add_deleted_documents
     # Make sure we have at least N deleted documents in the index
     s = solr_client
-    want_deleted_count = 10
+    want_deleted_count = 5
     deleted_count = s.get("select", params: solr_params.merge(q: "deleted:true"))["response"]["numFound"]
-    max_id = s.get("select", params: solr_params.merge(sort: "id desc"))["response"]["docs"][0]["id_int"]
+    min_id = s.get("select", params: solr_params.merge(sort: "id asc"))["response"]["docs"][0]["id_int"]
 
     (want_deleted_count - deleted_count).times do
       s.add({
-        "id" => (max_id += 1).to_s,
+        "id" => sprintf("%09d", (min_id -= 1)),
         "deleted" => true,
         "time_of_index" => Time.now
       })
@@ -151,7 +152,6 @@ RSpec.describe "OAISolr" do
         # should have only one record in sample set
         get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: "2013-08-01", until: "2013-08-01"
 
-        doc = Nokogiri::XML::Document.parse(last_response.body)
         expect(doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")).to be_empty
       end
 
@@ -164,12 +164,16 @@ RSpec.describe "OAISolr" do
         _doc2, token2, _ids2 = doc_token_ids(last_response.body)
         expect(token2).to eq("")
       end
+
+      it "when given a bad set, gives an oai noRecordsMatch error" do
+        get oai_endpoint, verb: "ListRecords", set: "hathitrust:nonexistent", metadataPrefix: "marc21"
+        expect(doc.xpath("count(//xmlns:error[@code='noRecordsMatch'])")).to eq(1)
+      end
     end
 
     describe "date range query" do
       it "can limit by until" do
         get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", until: min_htid_update.iso8601
-        doc = Nokogiri::XML::Document.parse(last_response.body)
         token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
         limited_list_size = token.attributes["completeListSize"].value
         expect(limited_list_size.to_i).to be < total_docs
@@ -178,7 +182,6 @@ RSpec.describe "OAISolr" do
       it "can limit by from and until" do
         date = min_htid_update
         get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (date - 30).iso8601, until: (date + 7).iso8601
-        doc = Nokogiri::XML::Document.parse(last_response.body)
         token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
         limited_list_size = token.attributes["completeListSize"].value
         expect(limited_list_size.to_i).to be < total_docs
@@ -187,7 +190,6 @@ RSpec.describe "OAISolr" do
       it "can limit by more granular timestamps" do
         date = min_htid_update
         get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (date - 30).strftime("%FT%TZ"), until: (date + 7).strftime("%FT%TZ")
-        doc = Nokogiri::XML::Document.parse(last_response.body)
         token = doc.xpath("//xmlns:ListRecords/xmlns:resumptionToken")[0]
         limited_list_size = token.attributes["completeListSize"].value
         expect(limited_list_size.to_i).to be < total_docs
@@ -198,14 +200,12 @@ RSpec.describe "OAISolr" do
       # anything between 0 and the full set
       it "with from in the future, gives no results" do
         get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (Date.today + 1).iso8601
-        doc = Nokogiri::XML::Document.parse(last_response.body)
         error = doc.xpath("//xmlns:error")[0]
         expect(error.attributes["code"].value).to eq("noRecordsMatch")
       end
 
       it "with until > from, gives no results" do
         get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: (max_htid_update + 1).iso8601, until: (max_htid_update - 1).iso8601
-        doc = Nokogiri::XML::Document.parse(last_response.body)
         error = doc.xpath("//xmlns:error")[0]
         expect(error.attributes["code"].value).to eq("noRecordsMatch")
       end
@@ -213,7 +213,6 @@ RSpec.describe "OAISolr" do
       it "includes deleted records" do
         del_date = deleted_document_date
         get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", from: del_date, until: del_date
-        doc = Nokogiri::XML::Document.parse(last_response.body)
         deleted = doc.xpath("//xmlns:record/xmlns:header[@status='deleted']")
         expect(deleted.count).to be > 0
       end
@@ -226,7 +225,6 @@ RSpec.describe "OAISolr" do
 
   describe "ListRecords in hathitrust:pd set" do
     before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", set: "hathitrust:pd" }
-    let(:ns_map) { {"marc" => "http://www.loc.gov/MARC21/slim"} }
     it_behaves_like "valid oai response"
 
     it "provides a page of N results" do
@@ -241,7 +239,6 @@ RSpec.describe "OAISolr" do
 
   describe "ListRecords in hathitrust:pdus set" do
     before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", set: "hathitrust:pdus" }
-    let(:ns_map) { {"marc" => "http://www.loc.gov/MARC21/slim"} }
     it_behaves_like "valid oai response"
 
     it "provides a page of N results" do
@@ -251,6 +248,19 @@ RSpec.describe "OAISolr" do
     it "does not include non-pd/non-pdus volumes" do
       expect(doc.xpath("count(//marc:datafield[@tag='856']/marc:subfield[@code='r'][normalize-space(text())='ic' or normalize-space(text())='und'])", ns_map)).to be == 0
       expect(doc.xpath("count(//marc:datafield[@tag='856']/marc:subfield[@code='r'][normalize-space(text())='pd' or normalize-space(text())='pdus'])", ns_map)).to be > 0
+    end
+  end
+
+  describe "ListRecords in hathitrust set" do
+    before(:each) { get oai_endpoint, verb: "ListRecords", metadataPrefix: "marc21", set: "hathitrust" }
+    it_behaves_like "valid oai response"
+
+    it "provides a page of N results" do
+      expect(doc.xpath("count(//xmlns:ListRecords/xmlns:record)")).to eq(OAISolr::Settings.page_size)
+    end
+
+    it "includes ic volumes" do
+      expect(doc.xpath("count(//marc:datafield[@tag='856']/marc:subfield[@code='r'][normalize-space(text())='ic' or normalize-space(text())='und'])", ns_map)).to be > 0
     end
   end
 
@@ -272,12 +282,22 @@ RSpec.describe "OAISolr" do
     it_behaves_like "valid oai response"
 
     it "can get a record as MARC" do
-      doc = MARC::XMLReader.new(StringIO.new(last_response.body)).first
-      expect(doc.leader).to match(/[\dA-Za-z ]{23}/)
+      record = MARC::XMLReader.new(StringIO.new(last_response.body)).first
+      expect(record.leader).to match(/[\dA-Za-z ]{23}/)
     end
   end
 
-  it "can handle post requests" do
-    post oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "nonexistent"
+  describe "GetRecord with nonexistent identifier" do
+    it "returns oai idDoesNotExist error" do
+      get oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "nonexistent"
+      error = doc.xpath("//xmlns:error")[0]
+      expect(error.attributes["code"].value).to eq("idDoesNotExist")
+    end
+
+    it "can handle post requests" do
+      post oai_endpoint, verb: "GetRecord", metadataPrefix: "oai_dc", identifier: "nonexistent"
+      error = doc.xpath("//xmlns:error")[0]
+      expect(error.attributes["code"].value).to eq("idDoesNotExist")
+    end
   end
 end

@@ -12,6 +12,7 @@ gem "rsolr"
 gem "ettin"
 gem "nokogiri"
 gem "rights_database", github: "hathitrust/rights_database"
+gem "canister"
 
 group :development, :test do
   gem "pry"

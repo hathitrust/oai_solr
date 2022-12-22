@@ -1,3 +1,5 @@
+ENV["APP_ENV"] = "test"
+
 require_relative "../oai_solr"
 require "simplecov"
 require "simplecov-lcov"

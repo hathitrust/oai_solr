@@ -17,7 +17,7 @@ module OAISolr
 
     # @return [Array<OAISolr::Set>] List of sets derived from those listed in the settings file
     def sets
-      OAISolr::Set::VALID_SET_SPECS.map { |spec| OAISolr::Set.for_spec(spec.to_s) }
+      Services.sets.values
     end
 
     def find(selector, opts = {})
@@ -36,8 +36,15 @@ module OAISolr
 
     def find_all(opts)
       oai_params = OAISolr::Params.new(opts)
-      response = solr_select(solr_params(oai_params))
-      result = OAISolr::ResultSet.new_from_solr_response(response, oai_params)
+
+      begin
+        response = solr_select(solr_params(oai_params))
+        result = OAISolr::ResultSet.new_from_solr_response(response, oai_params)
+      rescue NonexistentSetError
+        # set not configured; suggested behavior is to return an empty set.
+        # Behavior not defined in the OAI spec.
+        return []
+      end
 
       if result.is_partial?
         OAI::Provider::PartialResult.new(result.records, result.token)
@@ -48,7 +55,10 @@ module OAISolr
 
     def find_one(selector, opts)
       response = solr_select({q: "id:#{selector}"})
-      OAISolr::Record.new(response["response"]["docs"].first)
+
+      doc = response["response"]["docs"].first
+      raise OAI::IdException unless doc
+      OAISolr::Record.new(doc)
     end
 
     # Build a hash of params to be request from Solr

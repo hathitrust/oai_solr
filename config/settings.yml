@@ -3,17 +3,23 @@ repository_name: "Example Repository"
 repository_url: "http://localhost.default.invalid:4567/oai"
 record_prefix: "oai:localhost.default.invalid"
 admin_email: "admin@default.invalid"
-page_size: 10
+page_size: 500
 handle: "http://hdl.handle.net/2027/"
 earliest: "2013-08-01"
 sample_identifier: "012348511"
 sets:
   "hathitrust:pd" :
-    name: "Public domain and open access works viewable worldwide"
-    filter_query: ["ht_searchonly:false", "ht_searchonly_intl:false"]
+    name: "Open access and public domain works viewable worldwide"
+    filter_query: 
+      ht_searchonly: false
+      ht_searchonly_intl: false
     excluded_rights: [ic, op, orph, und, umall, nobody, orphcand, icus, pd-pvt, supp, pdus ]
   "hathitrust:pdus":
-    name: "Public domain works according to copyright law in the United States"
-    filter_query: ["ht_searchonly:false"]
+    name: "Open access and public domain works viewable in the United States"
+    filter_query: 
+      ht_searchonly: false
     excluded_rights: [ic, op, orph, und, umall, nobody, orphcand, icus, pd-pvt, supp ]
-
+  "hathitrust":
+    name: "All works in HathiTrust, including in-copyright material"
+    excluded_rights: [pd-pvt, supp]
+    filter_query: []

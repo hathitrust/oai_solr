@@ -18,6 +18,11 @@ module OAISolr
       @solr_document = solr_document
     end
 
+    # @return [Array<String>] The sets (as configured in settings) this record appears in.
+    def sets
+      Services.sets.values.select { |set| set.filter_query_matches(self) }
+    end
+
     # @return [DateTime] date/time it was last indexed
     def last_indexed
       DateTime.parse(solr_value("time_of_index"))
