@@ -69,8 +69,16 @@ module OAISolr
       record.marc_record.fields("974").each do |field|
         rights_attr = field["r"]
         access_profile = access_profile(field["c"], field["s"])
-
-        statements.add Services.rights_database.access_statements_map.map[[rights_attr, access_profile]]
+        if access_profile.nil?
+          logger.error "Access profile not found for #{field.to_s}"
+          next
+        end
+        statement = Services.rights_database.access_statements_map[attribute: rights_attr, access_profile: access_profile]
+        if statement.nil?
+          logger.error("Access statement not found for #{field.to_s}")
+          next
+        end
+        statements.add statement
       end
       statements.to_a.sort_by(&:head)
     end
