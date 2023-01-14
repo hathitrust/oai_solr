@@ -70,12 +70,12 @@ module OAISolr
         rights_attr = field["r"]
         access_profile = access_profile(field["c"], field["s"])
         if access_profile.nil?
-          logger.error "Access profile not found for #{field.to_s}"
+          logger.error "Access profile not found for #{field}"
           next
         end
         statement = Services.rights_database.access_statements_map[attribute: rights_attr, access_profile: access_profile]
         if statement.nil?
-          logger.error("Access statement not found for #{field.to_s}")
+          logger.error("Access statement not found for #{field}")
           next
         end
         statements.add statement
