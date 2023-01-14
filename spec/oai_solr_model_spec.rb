@@ -40,11 +40,21 @@ RSpec.describe OAISolr::Model do
 
     # dates based on sample records
     it "can find records modified since a given date" do
-      expect(described_class.new.find(:all, {from: Date.parse("2022-05-01"), until: Date.today}).records.map { |r| r.solr_document["ht_id_update"] }).to all(include(be >= 20220501))
+      records = described_class.new.find(:all, {from: Date.parse("2022-05-01")}).records
+
+      records.each do |r|
+        expect((r.deleted? && r.last_indexed >= DateTime.parse("2022-05-01")) ||
+                r.solr_document["ht_id_update"].any? { |d| d >= 20220501 }).to be true
+      end
     end
 
     it "can find records modified before a given date" do
-      expect(described_class.new.find(:all, {from: Time.at(0).to_date, until: Date.parse("2021-09-25")}).records.map { |r| r.solr_document["ht_id_update"] }).to all(include(be <= 20210925))
+      records = described_class.new.find(:all, {until: Date.parse("2021-09-25")}).records
+
+      records.each do |r|
+        expect((r.deleted? && r.last_indexed <= DateTime.parse("2021-09-25")) ||
+                r.solr_document["ht_id_update"].any? { |d| d <= 20210925 }).to be true
+      end
     end
 
     it "interprets from as >= and to as <=" do

@@ -28,7 +28,7 @@ RSpec.describe "OAISolr" do
       s.add({
         "id" => sprintf("%09d", (min_id -= 1)),
         "deleted" => true,
-        "time_of_index" => Time.now
+        "time_of_index" => Date.parse("2022-12-01").to_time
       })
     end
 
