@@ -44,7 +44,7 @@ RSpec.describe OAISolr::Record do
     end
 
     it "has dc:creator" do
-      expect(parsed.css("dc|creator").map { |c| c.text }).to include("Trippensee, Reuben Edwin,")
+      expect(parsed.css("dc|creator").map { |c| c.text }).to include(/Trippensee, Reuben Edwin,/)
     end
 
     it "has dc:type text" do

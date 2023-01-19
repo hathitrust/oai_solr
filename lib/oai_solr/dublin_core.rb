@@ -34,7 +34,9 @@ module OAISolr
     private
 
     def dublin_core_hash(record)
-      # TODO: to_dublin_core doesn't do much in the current release of ruby-marc
+      # TODO: to_dublin_core doesn't do much useful in the current release of
+      # ruby-marc - the only things we're keeping from it are "source" and
+      # "relation"
       record.marc_record.to_dublin_core.compact.tap do |dc|
         dc.default_proc = proc { |hash, key| hash[key] = [] }
 
@@ -43,9 +45,16 @@ module OAISolr
         dc["description"] = description(record)
         dc["rights"] = self.class.rights_statement(record)
 
-        %w[publisher language format]
+        %w[publisher language format topicStr authorStr]
           .reject { |k| record.solr_document[k].nil? }
           .each { |k| dc[k] = [record.solr_document[k]].flatten }
+
+        dc["subject"] = dc.delete("topicStr")
+        dc["creator"] = dc.delete("authorStr")
+
+        # the old OAI provider doesn't include dc:coverage, and what rubymarc
+        # gives is as badly-formatted as the authors & subjects
+        dc.delete("coverage")
 
         record.solr_document["oclc"]&.each { |o| dc["identifier"] << "(OCoLC)#{o}" }
         record.solr_document["ht_id"].each { |htid| dc["identifier"] << "#{Settings.handle}#{htid}" }
