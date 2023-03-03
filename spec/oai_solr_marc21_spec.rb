@@ -5,8 +5,6 @@ require "json"
 require "nokogiri"
 
 RSpec.describe OAISolr::Marc21 do
-  let(:sdoc) { JSON.parse(File.read("spec/data/001718542.json")) }
-
   shared_examples_for "slim marc record" do |file|
     let(:sdoc) { JSON.parse(File.read("spec/data/#{file}")) }
     let(:rec) { OAISolr::Record.new(sdoc) }
@@ -51,6 +49,6 @@ RSpec.describe OAISolr::Marc21 do
     end
   end
 
-  it_behaves_like "slim marc record", "001718542.json"
+  it_behaves_like "slim marc record", "000004150.json"
   it_behaves_like "slim marc record", "000007599.json"
 end

@@ -1,7 +1,6 @@
 {
   "id": "000004150",
   "id_int": 4150,
-  "fullrecord": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><collection xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.loc.gov/MARC21/slim\" xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\"><record><leader>00818nam a22002291  4500</leader><controlfield tag=\"001\">000004150</controlfield><controlfield tag=\"003\">MiAaHDL</controlfield><controlfield tag=\"005\">20211202000000.0</controlfield><controlfield tag=\"006\">m        d        </controlfield><controlfield tag=\"007\">cr bn ---auaua</controlfield><controlfield tag=\"008\">720419s1915    enk           000 0 eng d</controlfield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(MiU)990000041500106381</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">sdr-miu.990000041500106381</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(OCoLC)288919</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(CaOTULAS)159822833</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(RLIN)MIUG0288919-B</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"z\">(MiU)Aleph000004150</subfield></datafield><datafield tag=\"040\" ind1=\" \" ind2=\" \"><subfield code=\"c\">OU</subfield><subfield code=\"d\">MiU</subfield><subfield code=\"d\">CStRLIN</subfield></datafield><datafield tag=\"100\" ind1=\"1\" ind2=\" \"><subfield code=\"a\">Sacher, Harry,</subfield><subfield code=\"d\">1881-1971</subfield><subfield code=\"0\">http://id.loc.gov/authorities/names/n85364224</subfield><subfield code=\"1\">http://viaf.org/viaf/112673618</subfield></datafield><datafield tag=\"245\" ind1=\"1\" ind2=\"0\"><subfield code=\"a\">Zionism and the state</subfield><subfield code=\"c\">by H. Sacher.</subfield></datafield><datafield tag=\"260\" ind1=\" \" ind2=\" \"><subfield code=\"a\">London,</subfield><subfield code=\"b\">\"The Zionist\"</subfield><subfield code=\"c\">1915.</subfield></datafield><datafield tag=\"490\" ind1=\"0\" ind2=\" \"><subfield code=\"a\">Zionist pamphlets, no. 5.</subfield></datafield><datafield tag=\"500\" ind1=\" \" ind2=\" \"><subfield code=\"a\">Cover title.</subfield></datafield><datafield tag=\"538\" ind1=\" \" ind2=\" \"><subfield code=\"a\">Mode of access: Internet.</subfield></datafield><datafield tag=\"650\" ind1=\" \" ind2=\"0\"><subfield code=\"a\">Zionism.</subfield></datafield><datafield tag=\"899\" ind1=\" \" ind2=\" \"><subfield code=\"7\">23930014440006381</subfield><subfield code=\"a\">39015036727017</subfield><subfield code=\"b\">Buhr B 1202750</subfield></datafield><datafield tag=\"CID\" ind1=\" \" ind2=\" \"><subfield code=\"a\">000004150</subfield></datafield><datafield tag=\"DAT\" ind1=\"0\" ind2=\" \"><subfield code=\"a\">20201204162731.0</subfield><subfield code=\"b\">20211202000000.0</subfield></datafield><datafield tag=\"DAT\" ind1=\"1\" ind2=\" \"><subfield code=\"a\">20211202140849.0</subfield><subfield code=\"b\">2021-12-03T06:15:54Z</subfield></datafield><datafield tag=\"DAT\" ind1=\"2\" ind2=\" \"><subfield code=\"a\">2019-12-31T19:00:03Z</subfield></datafield><datafield tag=\"CAT\" ind1=\" \" ind2=\" \"><subfield code=\"a\">SDR-MIU</subfield><subfield code=\"d\">ALMA</subfield><subfield code=\"l\">prepare.pl-004-008</subfield></datafield><datafield tag=\"FMT\" ind1=\" \" ind2=\" \"><subfield code=\"a\">BK</subfield></datafield><datafield tag=\"HOL\" ind1=\" \" ind2=\" \"><subfield code=\"0\">sdr-miu.990000041500106381</subfield><subfield code=\"a\">MiU</subfield><subfield code=\"b\">SDR</subfield><subfield code=\"c\">MIU</subfield><subfield code=\"p\">mdp.39015036727017</subfield><subfield code=\"s\">MIU</subfield><subfield code=\"1\">990000041500106381</subfield></datafield><datafield tag=\"974\" ind1=\" \" ind2=\" \"><subfield code=\"b\">MIU</subfield><subfield code=\"c\">MIU</subfield><subfield code=\"d\">20211203</subfield><subfield code=\"s\">google</subfield><subfield code=\"u\">mdp.39015036727017</subfield><subfield code=\"y\">1915</subfield><subfield code=\"r\">pdus</subfield><subfield code=\"q\">bib</subfield><subfield code=\"t\">non-US bib date1 between 1897 and 1927</subfield></datafield></record></collection>",
   "format": [
     "Book"
   ],
@@ -55,9 +54,6 @@
   "title_display": "Zionism and the state by H. Sacher",
   "titleSort": "Zionism and the state",
   "title_sortkey": "zionism and the state",
-  "topicStr": [
-    "Zionism"
-  ],
   "countryOfPubStr": [
     "England",
     "United Kingdom"
@@ -92,10 +88,10 @@
     "mdp.39015036727017"
   ],
   "ht_id_display": [
-    "mdp.39015036727017|20211203||1915|1910-1919|||Zionism and the state by H. Sacher"
+    "mdp.39015036727017|20221210||1915|1910-1919|||Zionism and the state by H. Sacher"
   ],
   "ht_id_update": [
-    20211203
+    20221210
   ],
   "ht_rightscode": [
     "pdus"
@@ -103,7 +99,7 @@
   "htsource": [
     "University of Michigan"
   ],
-  "ht_json": "[{\"htid\":\"mdp.39015036727017\",\"newly_open\":null,\"ingest\":\"20211203\",\"rights\":[\"pdus\",null],\"heldby\":[\"columbia\",\"mcgill\",\"universityofcalifornia\",\"umich\",\"utexas\"],\"collection_code\":\"miu\",\"enum_pubdate\":\"1915\",\"enum_pubdate_range\":\"1910-1919\",\"dig_source\":\"google\"}]",
+  "ht_json": "[{\"htid\":\"mdp.39015036727017\",\"newly_open\":null,\"ingest\":\"20221210\",\"rights\":[\"pdus\",null],\"heldby\":[\"columbia\",\"mcgill\",\"universityofcalifornia\",\"umich\",\"utexas\"],\"collection_code\":\"miu\",\"enum_pubdate\":\"1915\",\"enum_pubdate_range\":\"1910-1919\",\"dig_source\":\"google\"}]",
   "ht_searchonly": false,
   "ht_searchonly_intl": true,
   "language008_full": "English",
@@ -114,10 +110,20 @@
     "umich",
     "utexas"
   ],
+  "topicStr": [
+    "Zionism"
+  ],
   "deleted": false,
-  "time_of_index": "2022-09-20T13:10:49.850Z",
+  "time_of_index": "2023-03-02T19:25:10.270Z",
+  "fullrecord": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><collection xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.loc.gov/MARC21/slim\" xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\"><record><leader>00833nam a22002411  4500</leader><controlfield tag=\"001\">000004150</controlfield><controlfield tag=\"003\">MiAaHDL</controlfield><controlfield tag=\"005\">20221206000000.0</controlfield><controlfield tag=\"006\">m        d        </controlfield><controlfield tag=\"007\">cr bn ---auaua</controlfield><controlfield tag=\"008\">720419s1915    enk           000 0 eng d</controlfield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(MiU)990000041500106381</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">sdr-miu.990000041500106381</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"z\">(MiU)MIU01000000000000000004150-goog</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(OCoLC)288919</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(CaOTULAS)159822833</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(RLIN)MIUG0288919-B</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"z\">(MiU)Aleph000004150</subfield></datafield><datafield tag=\"040\" ind1=\" \" ind2=\" \"><subfield code=\"c\">OU</subfield><subfield code=\"d\">MiU</subfield><subfield code=\"d\">CStRLIN</subfield></datafield><datafield tag=\"100\" ind1=\"1\" ind2=\" \"><subfield code=\"a\">Sacher, Harry,</subfield><subfield code=\"d\">1881-1971</subfield><subfield code=\"0\">http://id.loc.gov/authorities/names/n85364224</subfield><subfield code=\"1\">http://viaf.org/viaf/112673618</subfield></datafield><datafield tag=\"245\" ind1=\"1\" ind2=\"0\"><subfield code=\"a\">Zionism and the state</subfield><subfield code=\"c\">by H. Sacher.</subfield></datafield><datafield tag=\"260\" ind1=\" \" ind2=\" \"><subfield code=\"a\">London,</subfield><subfield code=\"b\">\"The Zionist\"</subfield><subfield code=\"c\">1915.</subfield></datafield><datafield tag=\"490\" ind1=\"0\" ind2=\" \"><subfield code=\"a\">Zionist pamphlets, no. 5.</subfield></datafield><datafield tag=\"500\" ind1=\" \" ind2=\" \"><subfield code=\"a\">Cover title.</subfield></datafield><datafield tag=\"538\" ind1=\" \" ind2=\" \"><subfield code=\"a\">Mode of access: Internet.</subfield></datafield><datafield tag=\"650\" ind1=\" \" ind2=\"0\"><subfield code=\"a\">Zionism.</subfield></datafield><datafield tag=\"899\" ind1=\" \" ind2=\" \"><subfield code=\"a\">39015036727017</subfield><subfield code=\"b\">Buhr B 1202750</subfield></datafield><datafield tag=\"CID\" ind1=\" \" ind2=\" \"><subfield code=\"a\">000004150</subfield></datafield><datafield tag=\"DAT\" ind1=\"0\" ind2=\" \"><subfield code=\"a\">20201204162731.0</subfield><subfield code=\"b\">20221206000000.0</subfield></datafield><datafield tag=\"DAT\" ind1=\"1\" ind2=\" \"><subfield code=\"a\">20221210060735.0</subfield><subfield code=\"b\">2022-12-10T20:55:50Z</subfield></datafield><datafield tag=\"DAT\" ind1=\"2\" ind2=\" \"><subfield code=\"a\">2022-11-17T18:30:02Z</subfield></datafield><datafield tag=\"CAT\" ind1=\" \" ind2=\" \"><subfield code=\"a\">SDR-MIU</subfield><subfield code=\"c\">miu</subfield><subfield code=\"d\">ALMA</subfield><subfield code=\"l\">prepare.pl-004-008</subfield></datafield><datafield tag=\"FMT\" ind1=\" \" ind2=\" \"><subfield code=\"a\">BK</subfield></datafield><datafield tag=\"HOL\" ind1=\" \" ind2=\" \"><subfield code=\"0\">sdr-miu.990000041500106381</subfield><subfield code=\"a\">MiU</subfield><subfield code=\"b\">SDR</subfield><subfield code=\"c\">MIU</subfield><subfield code=\"f\">000004150</subfield><subfield code=\"p\">mdp.39015036727017</subfield><subfield code=\"s\">MIU</subfield><subfield code=\"1\">990000041500106381</subfield></datafield><datafield tag=\"974\" ind1=\" \" ind2=\" \"><subfield code=\"b\">MIU</subfield><subfield code=\"c\">MIU</subfield><subfield code=\"d\">20221210</subfield><subfield code=\"s\">google</subfield><subfield code=\"u\">mdp.39015036727017</subfield><subfield code=\"y\">1915</subfield><subfield code=\"r\">pdus</subfield><subfield code=\"q\">bib</subfield><subfield code=\"t\">non-US bib date1 between 1898 and 1928</subfield></datafield></record></collection>",
+  "subject_display": [
+    "Zionism"
+  ],
   "country_of_pub_facet": [
     "England",
     "United Kingdom"
+  ],
+  "lc_subject_display": [
+    "Zionism"
   ]
 }

@@ -45,11 +45,11 @@ module OAISolr
         dc["description"] = description(record)
         dc["rights"] = self.class.rights_statement(record)
 
-        %w[publisher language format topicStr authorStr]
+        %w[publisher language format subject_display authorStr]
           .reject { |k| record.solr_document[k].nil? }
           .each { |k| dc[k] = [record.solr_document[k]].flatten }
 
-        dc["subject"] = dc.delete("topicStr")
+        dc["subject"] = dc.delete("subject_display")
         dc["creator"] = dc.delete("authorStr")
 
         # the old OAI provider doesn't include dc:coverage, and what rubymarc

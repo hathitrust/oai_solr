@@ -75,10 +75,6 @@ RSpec.describe OAISolr::Record do
       expect(parsed.css("dc|identifier").map { |c| c.text }).to include("(OCoLC)562083")
     end
 
-    it "has ISBN as a dc:identifier" do
-      expect(parsed.css("dc|identifier").map { |c| c.text }).to include("0080117325")
-    end
-
     it "has item handle as an dc:identifier" do
       handle = "http://hdl.handle.net/2027/uc1.31822013347232"
       expect(parsed.css("dc|identifier").map { |c| c.text }).to include(handle)
@@ -86,6 +82,18 @@ RSpec.describe OAISolr::Record do
 
     it "has dc:rights" do
       expect(parsed.css("dc|rights").text).to match(/^Items in this record/)
+    end
+
+    it "includes -- delimiters between main portion and subdivision of subject" do
+      expect(parsed.css("dc|subject").map { |c| c.text }).to include(/--/)
+    end
+
+    context "with record with ISBN" do
+      let(:sdoc) { JSON.parse(File.read("spec/data/008553258.json")) }
+
+      it "has ISBN as a dc:identifier" do
+        expect(parsed.css("dc|identifier").map { |c| c.text }).to include("9806741242")
+      end
     end
   end
 end

@@ -1,0 +1,131 @@
+{
+  "id": "008553258",
+  "id_int": 8553258,
+  "fullrecord": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><collection xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.loc.gov/MARC21/slim\" xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\"><record><leader>00798cam a2200253Ia 4500</leader><controlfield tag=\"001\">008553258</controlfield><controlfield tag=\"003\">MiAaHDL</controlfield><controlfield tag=\"005\">20100824000000.0</controlfield><controlfield tag=\"006\">m        d        </controlfield><controlfield tag=\"007\">cr bn ---auaua</controlfield><controlfield tag=\"008\">070129s2006    ve            000 m spa d</controlfield><datafield tag=\"020\" ind1=\" \" ind2=\" \"><subfield code=\"a\">9789806741249</subfield></datafield><datafield tag=\"020\" ind1=\" \" ind2=\" \"><subfield code=\"a\">9806741242</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">sdr-wu7623293</subfield></datafield><datafield tag=\"035\" ind1=\" \" ind2=\" \"><subfield code=\"a\">(OCoLC)84386644</subfield></datafield><datafield tag=\"040\" ind1=\" \" ind2=\" \"><subfield code=\"a\">N15</subfield><subfield code=\"c\">N15</subfield><subfield code=\"d\">CUY</subfield><subfield code=\"d\">DGU</subfield></datafield><datafield tag=\"090\" ind1=\" \" ind2=\" \"><subfield code=\"a\">PQ8550.23.O54</subfield><subfield code=\"b\">C82 2006</subfield></datafield><datafield tag=\"100\" ind1=\"1\" ind2=\" \"><subfield code=\"a\">Montejo, Eugenio.</subfield></datafield><datafield tag=\"245\" ind1=\"1\" ind2=\"3\"><subfield code=\"a\">El cuaderno de Blas Coll /</subfield><subfield code=\"c\">Eugenio Montejo. Seguido de La caza del relámpago / por Lino Cervantes.</subfield></datafield><datafield tag=\"250\" ind1=\" \" ind2=\" \"><subfield code=\"a\">1. ed.</subfield></datafield><datafield tag=\"260\" ind1=\" \" ind2=\" \"><subfield code=\"a\">[Caracas] :</subfield><subfield code=\"b\">bid &amp; co.,</subfield><subfield code=\"c\">2006.</subfield></datafield><datafield tag=\"300\" ind1=\" \" ind2=\" \"><subfield code=\"a\">127 p. ;</subfield><subfield code=\"c\">21 cm.</subfield></datafield><datafield tag=\"490\" ind1=\" \" ind2=\"0\"><subfield code=\"a\">Colección País portátil</subfield></datafield><datafield tag=\"500\" ind1=\" \" ind2=\" \"><subfield code=\"a\">Essays and poems by Montejo, poems by Cervantes.</subfield></datafield><datafield tag=\"538\" ind1=\" \" ind2=\" \"><subfield code=\"a\">Mode of access: Internet.</subfield></datafield><datafield tag=\"700\" ind1=\"1\" ind2=\"2\"><subfield code=\"a\">Cervantes, Lino.</subfield><subfield code=\"t\">Caza del relámpago.</subfield></datafield><datafield tag=\"740\" ind1=\"0\" ind2=\"2\"><subfield code=\"a\">Caza del relámpago</subfield></datafield><datafield tag=\"CID\" ind1=\" \" ind2=\" \"><subfield code=\"a\">008553258</subfield></datafield><datafield tag=\"DAT\" ind1=\"0\" ind2=\" \"><subfield code=\"a\">20100823122307.0</subfield><subfield code=\"b\">20100824000000.0</subfield></datafield><datafield tag=\"DAT\" ind1=\"1\" ind2=\" \"><subfield code=\"a\">20120815144132.0</subfield><subfield code=\"b\">2022-05-01T18:20:50Z</subfield></datafield><datafield tag=\"CAT\" ind1=\" \" ind2=\" \"><subfield code=\"a\">SDR-WU</subfield><subfield code=\"d\">UNKNOWN</subfield><subfield code=\"l\">loader.pl-001-001</subfield></datafield><datafield tag=\"FMT\" ind1=\" \" ind2=\" \"><subfield code=\"a\">BK</subfield></datafield><datafield tag=\"HOL\" ind1=\" \" ind2=\" \"><subfield code=\"0\">sdr-wu7623293</subfield><subfield code=\"a\">wu</subfield><subfield code=\"b\">SDR</subfield><subfield code=\"c\">WU</subfield><subfield code=\"p\">wu.89101017440</subfield><subfield code=\"s\">WU</subfield><subfield code=\"1\">7623293</subfield></datafield><datafield tag=\"974\" ind1=\" \" ind2=\" \"><subfield code=\"b\">WU</subfield><subfield code=\"c\">WU</subfield><subfield code=\"d\">20220501</subfield><subfield code=\"s\">google</subfield><subfield code=\"u\">wu.89101017440</subfield><subfield code=\"y\">2006</subfield><subfield code=\"r\">ic</subfield><subfield code=\"q\">bib</subfield><subfield code=\"t\">non-US bib date1 &gt;= 1927</subfield></datafield></record></collection>",
+  "format": [
+    "Book"
+  ],
+  "oclc": [
+    "84386644"
+  ],
+  "sdrnum": [
+    "sdr-wu7623293"
+  ],
+  "isbn": [
+    "9789806741249",
+    "9806741242"
+  ],
+  "mainauthor": [
+    "Montejo, Eugenio."
+  ],
+  "mainauthor_just_name": [
+    "Montejo, Eugenio."
+  ],
+  "author": [
+    "Montejo, Eugenio.",
+    "Cervantes, Lino."
+  ],
+  "authorStr": [
+    "Montejo, Eugenio.",
+    "Cervantes, Lino."
+  ],
+  "author2": [
+    "Cervantes, Lino."
+  ],
+  "author_top": [
+    "Montejo, Eugenio.",
+    "Eugenio Montejo. Seguido de La caza del relámpago / por Lino Cervantes.",
+    "Cervantes, Lino."
+  ],
+  "author_sortkey": "montejo, eugenio",
+  "title": [
+    "El cuaderno de Blas Coll"
+  ],
+  "title_a": [
+    "El cuaderno de Blas Coll"
+  ],
+  "title_ab": [
+    "El cuaderno de Blas Coll"
+  ],
+  "title_c": [
+    "Eugenio Montejo. Seguido de La caza del relámpago / por Lino Cervantes"
+  ],
+  "title_top": [
+    "El cuaderno de Blas Coll /"
+  ],
+  "title_rest": [
+    "Colección País portátil",
+    "Caza del relámpago.",
+    "Caza del relámpago"
+  ],
+  "series2": [
+    "Colección País portátil"
+  ],
+  "title_display": "El cuaderno de Blas Coll / Eugenio Montejo. Seguido de La caza del relámpago / por Lino Cervantes",
+  "titleSort": "cuaderno de Blas Coll",
+  "title_sortkey": "cuaderno de blas coll",
+  "countryOfPubStr": [
+    "Venezuela"
+  ],
+  "place_of_publication": [
+    "Venezuela"
+  ],
+  "publishDate": [
+    "2006"
+  ],
+  "publishDateRange": [
+    "2006",
+    "2000-2009"
+  ],
+  "display_date": "2006",
+  "publisher": [
+    "bid & co.,"
+  ],
+  "edition": [
+    "1. ed."
+  ],
+  "language": [
+    "Spanish"
+  ],
+  "language008": "spa",
+  "ht_availability": [
+    "Search only"
+  ],
+  "ht_availability_intl": [
+    "Search only"
+  ],
+  "ht_count": 1,
+  "ht_id": [
+    "wu.89101017440"
+  ],
+  "ht_id_display": [
+    "wu.89101017440|20220501||2006|2000-2009|||El cuaderno de Blas Coll / Eugenio Montejo. Seguido de La caza del relámpago / por Lino Cervantes"
+  ],
+  "ht_id_update": [
+    20220501
+  ],
+  "ht_rightscode": [
+    "ic"
+  ],
+  "htsource": [
+    "University of Wisconsin - Madison"
+  ],
+  "ht_json": "[{\"htid\":\"wu.89101017440\",\"newly_open\":null,\"ingest\":\"20220501\",\"rights\":[\"ic\",null],\"heldby\":[],\"collection_code\":\"wu\",\"enum_pubdate\":\"2006\",\"enum_pubdate_range\":\"2000-2009\",\"dig_source\":\"google\"}]",
+  "callnumber": [
+    "PQ8550.23.O54 C82 2006"
+  ],
+  "callnosort": [
+    "PQ8550.23.O54 C82 2006"
+  ],
+  "callnosearch": [
+    "PQ8550.23.O54 C82 2006"
+  ],
+  "ht_searchonly": true,
+  "ht_searchonly_intl": true,
+  "language008_full": "Spanish",
+  "deleted": false,
+  "time_of_index": "2023-03-03T13:58:52.298Z",
+  "country_of_pub_facet": [
+    "Venezuela"
+  ]
+}
