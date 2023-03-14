@@ -75,6 +75,10 @@ RSpec.describe OAISolr::Record do
       expect(parsed.css("dc|identifier").map { |c| c.text }).to include("(OCoLC)562083")
     end
 
+    it "has the LCCN as an identifier" do
+      expect(parsed.css("dc|identifier").map(&:text)).to include("LCCN agr48000285")
+    end
+
     it "has item handle as an dc:identifier" do
       handle = "http://hdl.handle.net/2027/uc1.31822013347232"
       expect(parsed.css("dc|identifier").map { |c| c.text }).to include(handle)
@@ -92,7 +96,19 @@ RSpec.describe OAISolr::Record do
       let(:sdoc) { JSON.parse(File.read("spec/data/008553258.json")) }
 
       it "has ISBN as a dc:identifier" do
-        expect(parsed.css("dc|identifier").map { |c| c.text }).to include("9806741242")
+        expect(parsed.css("dc|identifier").map { |c| c.text }).to include("ISBN 9806741242")
+      end
+    end
+
+    context "with record with more complex data" do
+      let(:sdoc) { JSON.parse(File.read("spec/data/001718542.json")) }
+
+      it "gets the full title" do
+        expect(parsed.css("dc|title").first.text).to eq("Local government ... comprising statutes, orders, forms, cases, and local decisions of the Local government board ; 1908-.")
+      end
+
+      it "gets multiple creators" do
+        expect(parsed.css("dc|creator").size).to eq(2)
       end
     end
   end

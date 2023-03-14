@@ -1,8 +1,13 @@
 require "oai"
 require "rights_database"
+require "oai_solr/dublin_core_crosswalk"
 
 module OAISolr
   class DublinCore < OAI::Provider::Metadata::DublinCore
+    # A dublic core crosswalk object for translating MARC records into
+    # the dublin core fields.
+    CROSSWALK = OAISolr::DublinCoreCrosswalk.new
+
     def encode _, record
       dc_hash = dublin_core_hash(record)
 
@@ -33,41 +38,53 @@ module OAISolr
 
     private
 
+    # @param [OAISolr::Record] record
     def dublin_core_hash(record)
-      # TODO: to_dublin_core doesn't do much useful in the current release of
-      # ruby-marc - the only things we're keeping from it are "source" and
-      # "relation"
-      record.marc_record.to_dublin_core.compact.tap do |dc|
-        dc.default_proc = proc { |hash, key| hash[key] = [] }
+      dc = {}
 
-        dc["type"] = "text"
-        dc["date"] = record.solr_document["display_date"]
-        dc["description"] = description(record)
-        dc["rights"] = self.class.rights_statement(record)
+      # Set stuff that's constant for HT items
+      dc["type"] = "text"
+      dc["rights"] = self.class.rights_statement(record)
 
-        %w[publisher language format subject_display authorStr]
-          .reject { |k| record.solr_document[k].nil? }
-          .each { |k| dc[k] = [record.solr_document[k]].flatten }
+      # Get stuff out of the solr documment
+      dc["date"] = record.first_solr_value("display_date")
+      dc["language"] = record.first_solr_value("language")
+      dc["publisher"] = record.first_solr_value("publisher")
+      dc["subject"] = record.solr_value("subject_display")
+      dc["format"] = record.first_solr_value("format")
 
-        dc["subject"] = dc.delete("subject_display")
-        dc["creator"] = dc.delete("authorStr")
+      marc = record.marc_record
 
-        # the old OAI provider doesn't include dc:coverage, and what rubymarc
-        # gives is as badly-formatted as the authors & subjects
-        dc.delete("coverage")
+      # The LoC spec says to NOT use creator, and instead use contributor, but our users
+      # have asked that we keep this the same as before, using creator.
+      dc["creator"] = CROSSWALK.contributor(marc)
 
-        record.solr_document["oclc"]&.each { |o| dc["identifier"] << "(OCoLC)#{o}" }
-        record.solr_document["ht_id"].each { |htid| dc["identifier"] << "#{Settings.handle}#{htid}" }
-        record.solr_document["isbn"]&.each { |isbn| dc["identifier"] << isbn }
-      end.reject { |_k, v| v.nil? || v.empty? }
-    end
+      # Pull the rest from the record according to the Library of Congress crosswalk
+      dc["publisher"] ||= CROSSWALK.publisher(marc)
+      dc["coverage"] = CROSSWALK.coverage(marc)
+      dc["description"] = CROSSWALK.description(marc)
+      dc["format"] ||= CROSSWALK.format(marc)
+      dc["relation"] = CROSSWALK.relation(marc)
+      dc["source"] = CROSSWALK.source(marc)
+      dc["title"] = CROSSWALK.title(marc)
 
-    # Current implementation appears to use 300
-    # ruby-marc's next release will likely use 500
-    def description(record)
-      return unless record.marc_record["300"]
+      # Get the identifiers
+      dc["identifier"] = record.solr_array("oclc").map { |id| "(OCoLC)#{id}" }
+        .concat(record.solr_array("ht_id").map { |htid| "#{Settings.handle}#{htid}" })
+        .concat(record.solr_array("isbn").map { |isbn| "ISBN #{isbn}" })
+        .concat(record.solr_array("issn").map { |issn| "ISBN #{issn}" })
+        .concat(record.solr_array("lccn").map { |lccn| "LCCN #{lccn}" })
+      # Flatten it all out and get rid of nils and duplicates
+      dc.select { |k, v| v.is_a?(Array) }.each_pair do |_field, values|
+        values.flatten!
+        values.compact!
+        values.uniq!
+        values.reject! { |x| x == "".freeze }
+      end
 
-      record.marc_record["300"].subfields.select { |sub| %w[a b c].include? sub.code }.map { |sub| sub.value }.join(" ")
+      # Ditch everything that's empty or nil
+      dc.reject! { |_k, v| v.nil? || v.empty? }
+      dc
     end
 
     # Returns an array of unique access statements for each HTID on record

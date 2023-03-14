@@ -31,6 +31,19 @@ services:
       - solr-sdr-catalog
       - mariadb
 
+  test-persist:
+    build: .
+    volumes:
+      - .:/usr/src/app
+      - gem_cache:/gems
+    command: bash -c "bin/wait-for solr-sdr-catalog:9033 mariadb:3306"
+    environment:
+      SOLR_URL: http://solr-sdr-catalog:9033/solr/catalog
+      RIGHTS_DATABASE_CONNECTION_STRING: "mysql2://ht_rights:ht_rights@mariadb/ht"
+    depends_on:
+      - solr-sdr-catalog
+      - mariadb
+
   solr-sdr-catalog:
     image: ghcr.io/hathitrust/catalog-solr-sample
     ports:
