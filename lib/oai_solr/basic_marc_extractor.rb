@@ -71,8 +71,8 @@ module OAISolr
     # merge into one set; the ranges we handle separately for efficiency (no sense in
     # turning '600'..'699' into an array)
     def set_interesting_tags!
-      @interesting_single_tags = Set.new
-      @interesting_ranges = Set.new
+      @interesting_single_tags = ::Set.new
+      @interesting_ranges = ::Set.new
       @single_extractors.map(&:computed_tags).each do |tags|
         case tags
         when Range

@@ -82,31 +82,17 @@ module OAISolr
       # type -- see below
     }
 
-    # Build the instance that will do the data extraction based on the mappings
-    # in MAPPINGS.
-    def initialize
-      MAPPINGS.each_pair do |key, spec_pairs|
-        define_singleton_method(key.to_sym, basic_marc_extractor_proc(spec_pairs))
-      end
+    MAPPINGS.each do |key, spec_pairs|
+      bme = BasicMARCExtractor.from_pairs(spec_pairs)
+      define_method(key.to_sym, ->(rec) { bme.values(rec) })
     end
 
+    # If it's necessary to add a field that does not have an identically-named
+    # accessor, or is not in MAPPINGS, some adjustment may be necessary,
     def full_map(rec)
-      {
-        contributor: contributor(rec),
-        coverage: coverage(rec),
-        date: date(rec),
-        description: description(rec),
-        format: self.format(rec), # need self to avoid keyword conflict
-        identifier: identifier(rec),
-        language: language(rec),
-        publisher: publisher(rec),
-        relation: relation(rec),
-        rights: rights(rec),
-        source: source(rec),
-        subject: subject(rec),
-        title: title(rec),
-        type: type(rec)
-      }.reject { |k, v| v.empty? }
+      fields = MAPPINGS.keys + %i(type date)
+      Hash[fields.map {|field| [ field, self.send(field, rec)] }]
+        .reject { |k, v| v.empty? }
     end
 
     # Get the best date possible, looking for four digits in the 008, then
@@ -137,11 +123,6 @@ module OAISolr
     end
 
     private
-
-    def basic_marc_extractor_proc(pairs)
-      bme = BasicMARCExtractor.from_pairs(pairs)
-      ->(rec) { bme.values(rec) }
-    end
 
     def date_008(rec)
       rec["008"].value[7..10]

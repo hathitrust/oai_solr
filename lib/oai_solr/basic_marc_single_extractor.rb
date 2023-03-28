@@ -110,7 +110,7 @@ module OAISolr
         @computed_tags = tags_to_match
         ->(t) { @computed_tags.cover?(t) }
       else
-        raise "Illegal argumrnt '#{tags_to_match.inspect}'"
+        raise "Illegal argument '#{tags_to_match.inspect}'"
       end
     end
 
