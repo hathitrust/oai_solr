@@ -90,9 +90,9 @@ module OAISolr
     # If it's necessary to add a field that does not have an identically-named
     # accessor, or is not in MAPPINGS, some adjustment may be necessary,
     def full_map(rec)
-      fields = MAPPINGS.keys + %i(type date)
-      Hash[fields.map {|field| [ field, self.send(field, rec)] }]
-        .reject { |k, v| v.empty? }
+      fields = MAPPINGS.keys + %i[type date]
+      fields.map { |field| [field, send(field, rec)] }
+        .to_h.reject { |k, v| v.empty? }
     end
 
     # Get the best date possible, looking for four digits in the 008, then
