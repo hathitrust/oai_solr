@@ -68,6 +68,18 @@ module OAISolr
       solr_document.has_key?(field) ? solr_document[field] : nil
     end
 
+    # @param [String] field Name of the solr field
+    # @return [String, Numeric, NilClass] The first found value, or nil if not found
+    def first_solr_value(field)
+      return nil unless solr_document.has_key?(field)
+      val = solr_document[field]
+      if val.is_a?(Array)
+        val.first
+      else
+        val
+      end
+    end
+
     # @param [String] field Name of the field
     # @return [Array<String>, Numeric, NilClass] The found value, or nil if not found
     def solr_array(field)
