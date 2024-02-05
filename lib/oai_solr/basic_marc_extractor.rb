@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "set"
 require_relative "basic_marc_single_extractor"
 
 module OAISolr

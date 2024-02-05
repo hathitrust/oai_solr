@@ -59,5 +59,4 @@ RSpec.describe OAISolr::Marc21 do
 
   it_behaves_like "slim marc record", "000004150.json"
   it_behaves_like "slim marc record", "000007599.json"
-
 end
