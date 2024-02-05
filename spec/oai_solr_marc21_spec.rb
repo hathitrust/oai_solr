@@ -46,9 +46,18 @@ RSpec.describe OAISolr::Marc21 do
       it "has a subject field" do
         expect(marc21.slim_marc(rec.marc_record)["650"].count).to be > 0
       end
+
+      # true for the two sample records below, not necessarily
+      # always these indicators!
+      it "has indicators for title field" do
+        f = marc21.slim_marc(rec.marc_record)["245"]
+        expect(f.indicator1).to eq("1")
+        expect(f.indicator2).to eq("0")
+      end
     end
   end
 
   it_behaves_like "slim marc record", "000004150.json"
   it_behaves_like "slim marc record", "000007599.json"
+
 end

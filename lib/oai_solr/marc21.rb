@@ -60,7 +60,7 @@ module OAISolr
     # @param [Array]
     def add_field(full_marc, tag, subfield_codes)
       full_marc.each_by_tag(tag) do |field|
-        new_field = MARC::DataField.new(field.tag, field["ind1"], field["ind2"])
+        new_field = MARC::DataField.new(field.tag, field.indicator1, field.indicator2)
         field.each do |subfield|
           new_field.append(subfield) if subfield_codes.include? subfield.code
         end
