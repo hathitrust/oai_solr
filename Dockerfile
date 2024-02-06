@@ -14,7 +14,7 @@ RUN gem install bundler
 FROM base AS development
 
 RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
-  libxerces-c-samples \
+  libxerces-c-samples
 
 COPY --from=ghcr.io/hathitrust/feed /usr/local/bin/validate-cache /usr/local/bin/validate-cache
 #
