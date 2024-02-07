@@ -1,10 +1,22 @@
 ---
 version: '3'
 
+x-condition-healthy: &healthy
+  condition: service_healthy
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 5s
+  timeout: 10s
+  start_period: 10s
+  retries: 5
+
 services:
 
-  web:
-    build: .
+
+  web: &web
+    build:
+      context: .
+      target: development
     ports:
       - "4567:4567"
     volumes:
@@ -15,26 +27,22 @@ services:
       SOLR_URL: http://solr-sdr-catalog:9033/solr/catalog
       RIGHTS_DATABASE_CONNECTION_STRING: "mysql2://ht_rights:ht_rights@mariadb/ht"
     depends_on:
-      - solr-sdr-catalog
-      - mariadb
+      solr-sdr-catalog: *healthy
+      mariadb: *healthy
 
   test:
-    build: .
-    volumes:
-      - .:/usr/src/app
-      - gem_cache:/gems
-    command: bash -c "bin/wait-for solr-sdr-catalog:9033 mariadb:3306 && bundle exec rspec"
-    environment:
-      SOLR_URL: http://solr-sdr-catalog:9033/solr/catalog
-      RIGHTS_DATABASE_CONNECTION_STRING: "mysql2://ht_rights:ht_rights@mariadb/ht"
-    depends_on:
-      - solr-sdr-catalog
-      - mariadb
+    <<: *web
+    command: bundle exec rspec
+    profiles: 
+      - test
 
   solr-sdr-catalog:
     image: ghcr.io/hathitrust/catalog-solr-sample
     ports:
       - "9033:9033"
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: [ "CMD", "/usr/bin/curl", "-s", "-f", "http://localhost:9033/solr/catalog/admin/ping"]
 
   mariadb:
     image: ghcr.io/hathitrust/db-image
@@ -44,6 +52,9 @@ services:
       MYSQL_DATABASE: ht
       MYSQL_USER: ht_rights
       MYSQL_PASSWORD: ht_rights
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
 
 volumes:
   gem_cache:

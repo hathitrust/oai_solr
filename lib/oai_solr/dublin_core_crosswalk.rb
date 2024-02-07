@@ -1,4 +1,3 @@
-require "set"
 require_relative "basic_marc_extractor"
 
 module OAISolr
