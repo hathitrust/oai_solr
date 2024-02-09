@@ -35,7 +35,9 @@ module OAISolr
       @slim_marc = MARC::Record.new
       # TODO: Do something about field "899" which is specd but not valid
       @slim_marc.leader = full_marc.leader
-      @slim_marc << full_marc["005"]
+      full_marc.fields
+        .select { |f| f.is_a? MARC::ControlField }
+        .each { |f| @slim_marc << f }
       SLIM_MARC_FIELDS.each do |tag, subfield_codes|
         add_field(full_marc, symbol_to_tag(tag), subfield_codes.chars)
       end
