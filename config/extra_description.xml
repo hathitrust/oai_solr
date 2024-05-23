@@ -10,7 +10,7 @@
     </metadataPolicy>
     <dataPolicy>
       <URL>https://www.hathitrust.org/the-collection/search-access/access-use-policy/</URL>
-        <text>HathiTrust is a collaborative library initiative. Users are encouraged to cite and link to digital content and are free to do so without asking for permission. Depending on the source of the digitized work, licenses or other contractual terms may restrict further distribution or other uses. For volume-specific information, please consult the &lt;dc:rights&gt; element (oai_dc), 856$r (marc21), or 974$r (marc21_full). You need to make your own assessment of the copyright or other legal concerns related to uses beyond those provided by HathiTrust for particular works.
+        <text>HathiTrust is a collaborative library initiative. Users are encouraged to cite and link to digital content and are free to do so without asking for permission. Depending on the source of the digitized work, licenses or other contractual terms may restrict further distribution or other uses. For volume-specific information, please consult the &lt;dc:rights&gt; element (oai_dc) or 856$r (marc21). You need to make your own assessment of the copyright or other legal concerns related to uses beyond those provided by HathiTrust for particular works.
 
 The possible Access and Use statements that apply to each book are listed at the URL above.</text>
     </dataPolicy>

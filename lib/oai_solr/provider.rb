@@ -1,7 +1,9 @@
 require "oai"
+require "oai_solr/settings"
 require "oai_solr/model"
 require "oai_solr/marc21"
-require "oai_solr/marc21_full"
+# Not currently enabled
+#  require "oai_solr/marc21_full"
 require "oai_solr/dublin_core"
 
 module OAISolr
@@ -12,7 +14,8 @@ module OAISolr
     admin_email Settings.admin_email
     source_model OAISolr::Model.new
     register_format OAISolr::Marc21.new
-    register_format OAISolr::Marc21Full.new
+    # Not currently enabled
+    # register_format OAISolr::Marc21Full.new
     register_format OAISolr::DublinCore.instance
     sample_id Settings.sample_identifier
     update_granularity OAI::Const::Granularity::LOW

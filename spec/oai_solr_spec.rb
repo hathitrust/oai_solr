@@ -80,8 +80,12 @@ RSpec.describe "OAISolr" do
       expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).to include("marc21")
     end
 
-    it "claims to support marc21_full" do
+    xit "includes marc21_full (currently disabled)" do
       expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).to include("marc21_full")
+    end
+
+    it "does not include marc21_full" do
+      expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).not_to include("marc21_full")
     end
   end
 
@@ -298,10 +302,16 @@ RSpec.describe "OAISolr" do
     before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "marc21_full", identifier: existing_record["id"] }
     let(:response_record) { MARC::XMLReader.new(StringIO.new(last_response.body)).first }
 
-    it_behaves_like "valid oai response"
+    xcontext "when enabled (currently disabled)" do
+      it_behaves_like "valid oai response"
 
-    it "can get a record as MARC" do
-      expect(response_record.leader).to match(/[\dA-Za-z ]{23}/)
+      it "can get a record as MARC" do
+        expect(response_record.leader).to match(/[\dA-Za-z ]{23}/)
+      end
+    end
+
+    it "returns an error" do
+      expect(doc.xpath("count(//xmlns:error[@code='cannotDisseminateFormat'])")).to eq(1)
     end
   end
 

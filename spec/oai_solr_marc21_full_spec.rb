@@ -1,6 +1,6 @@
 require "spec_helper"
 require "oai_solr/record"
-require "oai_solr/marc21"
+require "oai_solr/marc21_full"
 require "json"
 require "nokogiri"
 
