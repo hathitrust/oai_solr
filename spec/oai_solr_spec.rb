@@ -62,6 +62,10 @@ RSpec.describe "OAISolr" do
   describe "Identify" do
     before(:each) { get oai_endpoint, verb: "Identify" }
     it_behaves_like "valid oai response"
+
+    it "references metadata policy" do
+      expect(last_response.body).to include("/metadata-sharing-and-use-policy")
+    end
   end
 
   describe "ListMetadataFormats" do
@@ -74,6 +78,14 @@ RSpec.describe "OAISolr" do
 
     it "claims to support marc21" do
       expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).to include("marc21")
+    end
+
+    xit "includes marc21_full (currently disabled)" do
+      expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).to include("marc21_full")
+    end
+
+    it "does not include marc21_full" do
+      expect(doc.xpath("//xmlns:metadataPrefix").map { |mp| mp.content }).not_to include("marc21_full")
     end
   end
 
@@ -283,6 +295,23 @@ RSpec.describe "OAISolr" do
     it "can get a record as MARC" do
       record = MARC::XMLReader.new(StringIO.new(last_response.body)).first
       expect(record.leader).to match(/[\dA-Za-z ]{23}/)
+    end
+  end
+
+  describe "GetRecord full MARC" do
+    before(:each) { get oai_endpoint, verb: "GetRecord", metadataPrefix: "marc21_full", identifier: existing_record["id"] }
+    let(:response_record) { MARC::XMLReader.new(StringIO.new(last_response.body)).first }
+
+    xcontext "when enabled (currently disabled)" do
+      it_behaves_like "valid oai response"
+
+      it "can get a record as MARC" do
+        expect(response_record.leader).to match(/[\dA-Za-z ]{23}/)
+      end
+    end
+
+    it "returns an error" do
+      expect(doc.xpath("count(//xmlns:error[@code='cannotDisseminateFormat'])")).to eq(1)
     end
   end
 

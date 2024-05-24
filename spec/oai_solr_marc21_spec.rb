@@ -18,10 +18,6 @@ RSpec.describe OAISolr::Marc21 do
         slimmed = marc21.slim_marc(rec.marc_record)
         parsed = Nokogiri::XML::Document.parse(slimmed.to_xml.to_s)
         expect(slim_schema.valid?(parsed)).to be true
-        # valid? is missing from the MARC gem, but it only checks for
-        # ControlField/DataField discrepancies anyway
-        # expect(rec.marc_record.valid?).to be true
-        # expect(marc21.slim_marc(rec.marc_record).valid?).to be true
       end
 
       it "replaces the 974s with 856s for #{file}" do
