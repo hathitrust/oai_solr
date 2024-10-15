@@ -16,6 +16,8 @@ FROM base AS development
 RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
   libxerces-c-samples
 
+RUN gem install ruby-lsp
+
 COPY --from=ghcr.io/hathitrust/feed /usr/local/bin/validate-cache /usr/local/bin/validate-cache
 #
 # COPY . /usr/src/app
