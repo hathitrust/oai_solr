@@ -9,20 +9,20 @@ on:
             environments:
                 description: The environment to deploy to
                 type: choice
-                default: linux/amd64,linux/arm64
+                default: testing
                 options:
                 - testing
                 - staging
                 - production
 
 jobs:
-    deploy-unstable:
+    deploy:
             runs-on: ubuntu-latest
             permissions:
                 contents: read
                 packages: write
             steps:
-                - name: Deploy to workshop
+                - name: Deploy to ${{inputs.environments}}
                   uses: hathitrust/github_actions/deploy@v1.6.0
                   with:
                     image: ghcr.io/${{ github.repository }}:${{ inputs.branch_hash }}
