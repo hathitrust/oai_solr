@@ -12,6 +12,21 @@ x-healthcheck-defaults: &healthcheck-defaults
 services:
 
 
+  dev:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - gem_cache:/gems
+    command: sleep infinity
+    environment:
+      SOLR_URL: http://solr-sdr-catalog:9033/solr/catalog
+      RIGHTS_DATABASE_CONNECTION_STRING: "mysql2://ht_rights:ht_rights@mariadb/ht"
+    depends_on:
+      solr-sdr-catalog: *healthy
+      mariadb: *healthy
+
   web: &web
     build:
       context: .
