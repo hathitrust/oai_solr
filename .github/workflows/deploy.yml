@@ -23,7 +23,7 @@ jobs:
                 packages: write
             steps:
                 - name: Deploy to ${{inputs.environments}}
-                  uses: hathitrust/github_actions/deploy@v1.6.0
+                  uses: hathitrust/github_actions/deploy@v1
                   with:
                     image: ghcr.io/${{ github.repository }}:${{ inputs.branch_hash }}
                     file: environments/${{ github.event.repository.name }}/${{inputs.environments}}/web-image.txt
