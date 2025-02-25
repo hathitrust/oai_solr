@@ -5,7 +5,7 @@ source "https://rubygems.org"
 # gem "rails"
 
 gem "rackup"
-gem "sinatra", "~> 4.0"
+gem "sinatra", "~> 4.1"
 gem "puma"
 gem "oai"
 gem "marc", "~> 1.2"
