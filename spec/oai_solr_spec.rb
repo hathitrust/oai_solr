@@ -25,7 +25,7 @@ RSpec.describe "OAISolr" do
 
     (want_deleted_count - deleted_count).times do
       s.add({
-        "id" => sprintf("%09d", (min_id -= 1)),
+        "id" => sprintf("%09d", min_id -= 1),
         "deleted" => true,
         "time_of_index" => Date.parse("2022-12-01").to_time
       })
