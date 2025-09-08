@@ -6,7 +6,15 @@ provider backed by metadata records in Solr
 ## Initial Setup
 ```bash
 git clone https://github.com/hathitrust/oai_solr
-docker-compose up
+cd oai_solr
+docker compose build
+docker compose run web bundle install
+```
+
+## Running tests
+
+```
+docker compose run test
 ```
 
 ## Using an External Solr
