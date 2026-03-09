@@ -9,6 +9,7 @@ require "oai_solr/defaults"
 module OAISolr
   class Params
     include OAISolr::Defaults
+
     attr_reader :cursor_mark
 
     # @param [Hash] params from the incoming OAI request
