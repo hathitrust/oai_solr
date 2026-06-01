@@ -17,6 +17,28 @@ docker compose run web bundle install
 docker compose run test
 ```
 
+## How to update repository dependency versions
+
+1- Upgrade the Bundler version specified in the `Gemfile.lock` file to the latest.
+
+```
+bundle update --bundler
+```
+
+2- Upgrade the versions of the gems specified in the `Gemfile.lock` file to the latest.
+
+```
+bundle update --all
+```
+
+2- Test the application to make sure the new versions of the dependencies do not cause any issues.
+
+```
+docker compose build
+docker compose run --rm test bundle install
+docker compose run --rm test
+```
+
 ## Using an External Solr
 
 Follow the README from https://github.com/hathitrust/hathitrust_catalog_indexer
