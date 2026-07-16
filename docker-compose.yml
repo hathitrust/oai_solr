@@ -36,7 +36,7 @@ services:
       - test
 
   solr-sdr-catalog:
-    image: ghcr.io/hathitrust/catalog-solr-sample
+    image: ghcr.io/hathitrust/catalog-solr-sample-standalone:solr-standalone
     ports:
       - "9033:9033"
     healthcheck:
